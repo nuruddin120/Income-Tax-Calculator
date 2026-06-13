@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Income Tax Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:  #0b3d2e;
+    --navy:   #1a2f42;
+    --ink:    #1c2420;
+    --muted:  #6b7a71;
+    --line:   #e3e8e4;
+    --bg:     #ffffff;
+    --surface:#f7f9f7;
+    --error:  #b3322e;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Hind Siliguri',sans-serif;
+    background:var(--surface);
+    color:var(--ink);
+    line-height:1.6;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  .wrap {
+    width:100%;
+    max-width:620px;
+    margin:0 auto;
+    padding:48px 20px 40px;
+    flex:1;
+  }
+
+  /* ── Header ─────────────────────────── */
+  header { margin-bottom:32px; }
+  header h1 { font-size:21px; font-weight:700; line-height:1.4; }
+  header p  { color:var(--muted); font-size:14px; margin-top:4px; }
+  .tax-year {
+    display:inline-block;
+    margin-top:8px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.07em;
+    background:#e8f0eb;
+    color:var(--green);
+    border-radius:4px;
+    padding:2px 8px;
+    font-weight:600;
+  }
+
+  /* ── Cards ──────────────────────────── */
+  .card {
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:20px;
+    margin-bottom:14px;
+  }
+  .section-label {
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:.07em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:12px;
+  }
+
+  /* ── Month grid ─────────────────────── */
+  .months-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  @media(min-width:440px){ .months-grid{ grid-template-columns:1fr 1fr 1fr; } }
+  .month-field { display:flex; flex-direction:column; gap:4px; }
+  .month-field label { font-size:12px; font-weight:600; color:var(--muted); }
+  .month-field label .fiscal { color:var(--green); font-size:10px; margin-left:3px; }
+  .mini-wrap { position:relative; }
+  .mini-wrap .tk { position:absolute; left:9px; top:50%; transform:translateY(-50%);
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted); pointer-events:none; }
+  .month-field input {
+    width:100%; padding:9px 6px 9px 24px;
+    border:1px solid var(--line); border-radius:8px;
+    font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink); background:var(--bg);
+    transition:border-color .15s;
+  }
+  .month-field input:focus { outline:none; border-color:var(--green); }
+  .month-field input.invalid { border-color:var(--error); }
+
+  /* ── Bonus / general fields ─────────── */
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media(max-width:400px){ .two-col{ grid-template-columns:1fr; } }
+  .field label { display:block; font-size:12.5px; font-weight:600; color:var(--muted); margin-bottom:5px; }
+  .iw { position:relative; }
+  .iw .tk { position:absolute; left:10px; top:50%; transform:translateY(-50%);
+    font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--muted); pointer-events:none; }
+  .field input[type=number] {
+    width:100%; padding:10px 10px 10px 28px;
+    border:1px solid var(--line); border-radius:8px;
+    font-family:'IBM Plex Mono',monospace; font-size:14px; color:var(--ink); background:var(--bg);
+    transition:border-color .15s;
+  }
+  .field input[type=number]:focus { outline:none; border-color:var(--green); }
+  .field input.invalid { border-color:var(--error); }
+  .field .err { display:none; color:var(--error); font-size:12px; margin-top:3px; }
+  .field.has-error .err { display:block; }
+
+  /* ── Select ─────────────────────────── */
+  .field select {
+    width:100%; padding:10px 36px 10px 12px;
+    border:1px solid var(--line); border-radius:8px;
+    font-family:'Hind Siliguri',sans-serif; font-size:14px; color:var(--ink); background:var(--bg);
+    appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7a71' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 10px center;
+    cursor:pointer; transition:border-color .15s;
+  }
+  .field select:focus { outline:none; border-color:var(--green); }
+
+  /* ── Checkbox ───────────────────────── */
+  .check-row { display:flex; align-items:center; gap:8px; margin-top:14px; }
+  .check-row input[type=checkbox] { width:16px; height:16px; accent-color:var(--green); cursor:pointer; flex-shrink:0; }
+  .check-row label { font-size:13.5px; color:var(--ink); cursor:pointer; }
+  .check-row label small { color:var(--muted); font-weight:400; }
+
+  /* ── Reset ──────────────────────────── */
+  .reset-row { margin-bottom:6px; text-align:right; }
+  button.reset {
+    border:none; background:none; color:var(--muted);
+    font-family:'Hind Siliguri',sans-serif; font-size:13px; font-weight:600;
+    cursor:pointer; padding:4px 0; border-bottom:1px solid transparent;
+  }
+  button.reset:hover { color:var(--error); border-bottom-color:var(--error); }
+
+  /* ── Result rows ────────────────────── */
+  .result-block { margin-bottom:8px; }
+  .result-block .block-title {
+    font-size:11.5px; font-weight:700; letter-spacing:.07em;
+    text-transform:uppercase; color:var(--muted);
+    padding:14px 0 6px; border-top:2px solid var(--line); margin-top:16px;
+  }
+  .result-block:first-child .block-title { border-top:none; margin-top:0; }
+  .row {
+    display:flex; justify-content:space-between; align-items:baseline;
+    gap:16px; padding:11px 0; border-bottom:1px solid var(--line);
+  }
+  .row .name { font-size:14px; color:var(--muted); }
+  .row .value { font-family:'IBM Plex Mono',monospace; font-weight:500; font-size:15px; white-space:nowrap; }
+  .row .deduct { color:var(--error); }
+
+  /* ── Final boxes ────────────────────── */
+  .final-box {
+    padding:22px; border-radius:12px; color:#fff; margin-top:16px;
+  }
+  .final-box.green { background:var(--green); }
+  .final-box.navy  { background:var(--navy); }
+  .final-box .flabel {
+    font-size:11px; letter-spacing:.08em; text-transform:uppercase; font-weight:700;
+  }
+  .final-box.green .flabel { color:#a9c7b4; }
+  .final-box.navy  .flabel { color:#7fa8c0; }
+  .final-box .famount {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:clamp(24px,6vw,32px); font-weight:600; margin:4px 0 8px;
+    color:#f7d489;
+  }
+  .final-box .fmsg { font-size:13.5px; }
+  .final-box.green .fmsg { color:#d4e4da; }
+  .final-box.navy  .fmsg { color:#a8c8d8; }
+  .final-box .fmsg strong { color:#fff; }
+
+  /* ── Slab table ─────────────────────── */
+  .slab-wrap {
+    background:var(--bg); border:1px solid var(--line);
+    border-radius:12px; overflow:hidden; margin-bottom:0; overflow-x:auto;
+  }
+  table.slab { width:100%; border-collapse:collapse; font-size:13px; min-width:340px; }
+  table.slab thead th {
+    background:#f4f7f5; font-size:11px; font-weight:700; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--muted); padding:9px 14px;
+    border-bottom:1px solid var(--line); text-align:left; white-space:nowrap;
+  }
+  table.slab thead th:not(:first-child) { text-align:right; }
+  table.slab tbody td {
+    padding:10px 14px; border-bottom:1px solid var(--line); vertical-align:middle;
+  }
+  table.slab tbody td:not(:first-child) { text-align:right; }
+  table.slab tbody tr:last-child td { border-bottom:none; }
+  table.slab .rate-col { font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500; }
+  table.slab .zero    { color:var(--muted); }
+  table.slab .tax-col { font-family:'IBM Plex Mono',monospace; font-weight:600; }
+  table.slab .amt-col { font-family:'IBM Plex Mono',monospace; font-size:12.5px; }
+
+  /* ── Investment options table ───────── */
+  .options { margin-top:32px; }
+  .options h2 { font-size:15px; font-weight:700; margin-bottom:3px; }
+  .options .sub { font-size:13px; color:var(--muted); margin-bottom:12px; }
+  .options table { width:100%; border-collapse:collapse; font-size:13px; }
+  .options th {
+    text-align:left; font-size:11px; font-weight:700; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--muted); padding:8px 8px 8px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .options th:last-child,.options td:last-child { text-align:right; padding-right:0; white-space:nowrap; }
+  .options td { padding:10px 8px 10px 0; border-bottom:1px solid var(--line); vertical-align:top; }
+  .options td.lim { font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--green); font-weight:500; }
+  .options td ul { margin:4px 0 0 16px; color:var(--muted); font-size:12px; }
+  .options td ul li { margin:1px 0; }
+
+  /* ── Footer ─────────────────────────── */
+  footer { border-top:1px solid var(--line); padding:22px 20px 30px; }
+  .footer-inner { max-width:620px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+  .f-name { font-weight:700; font-size:15px; }
+  .f-role { display:block; font-size:12.5px; color:var(--muted); }
+  .wa-link {
+    display:inline-flex; align-items:center; gap:8px;
+    text-decoration:none; color:var(--green);
+    font-family:'IBM Plex Mono',monospace; font-size:13.5px; font-weight:600;
+    padding:8px 14px; border:1px solid var(--line); border-radius:999px;
+    transition:border-color .15s,background .15s;
+  }
+  .wa-link:hover { border-color:#25d366; background:#f2fbf5; }
+  .wa-link svg { width:18px; height:18px; color:#25d366; flex-shrink:0; }
+  @media(max-width:480px){
+    .wa-link .wa-num { display:none; }
+    .wa-link { padding:10px; }
+  }
+  .field input[type=text] {
+    width:100%; padding:10px 12px;
+    border:1px solid var(--line); border-radius:8px;
+    font-family:'Hind Siliguri',sans-serif; font-size:14.5px;
+    color:var(--ink); background:var(--bg); transition:border-color .15s;
+  }
+  .field input[type=text]:focus { outline:none; border-color:var(--green); }
+
+  /* ── Existing investments ───────────── */
+  .invest-item {
+    display:flex; justify-content:space-between; align-items:flex-start;
+    padding:10px 0; border-bottom:1px solid var(--line); gap:8px;
+  }
+  .inv-name { font-size:13.5px; font-weight:600; }
+  .inv-sub  { font-size:11.5px; color:var(--muted); margin-top:1px; }
+  .inv-cap  { font-size:11px; color:#b06000; margin-top:2px; }
+  .inv-allowable { font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:600; white-space:nowrap; }
+  .inv-del  { border:none; background:none; color:var(--error); font-size:20px; cursor:pointer; padding:0 4px; line-height:1; flex-shrink:0; }
+  .invest-total-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0 0; margin-top:4px; border-top:1px solid var(--line); }
+  button.add-btn {
+    display:none; width:100%; margin-top:10px; padding:10px;
+    background:var(--green); color:#fff; border:none; border-radius:8px;
+    font-family:'Hind Siliguri',sans-serif; font-size:14px; font-weight:600;
+    cursor:pointer; transition:opacity .15s;
+  }
+  button.add-btn:hover { opacity:.87; }
+
+  /* ── Print / PDF button ─────────────── */
+  .print-btn {
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; margin-top:20px; padding:13px;
+    background:var(--green); color:#fff; border:none; border-radius:10px;
+    font-family:'Hind Siliguri',sans-serif; font-size:15px; font-weight:700;
+    cursor:pointer; transition:opacity .15s;
+  }
+  .print-btn:hover { opacity:.87; }
+  .print-btn svg { width:18px; height:18px; flex-shrink:0; }
+
+  /* ── Print area (hidden on screen) ─── */
+  #printArea { display:none; }
+
+  @media(prefers-reduced-motion:reduce){ *{ transition:none !important; } }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>ইনকাম ট্যাক্স ক্যালকুলেটর</h1>
+    <p>মাসিক বেতন ও বোনাস দিন — বিনিয়োগ লক্ষ্য ও প্রদেয় কর জেনে নিন।</p>
+    <span class="tax-year">করবর্ষ: ২০২৬-২৭ এবং ২০২৭-২৮</span>
+  </header>
+
+  <!-- Card 1: Monthly salaries -->
+  <div class="card">
+    <div class="section-label">মাসিক বেতন — জুলাই থেকে জুন</div>
+    <div class="months-grid" id="monthsGrid"></div>
+  </div>
+
+  <!-- Card 2: Bonuses -->
+  <div class="card">
+    <div class="section-label">বোনাস ও অতিরিক্ত আয় (বাৎসরিক)</div>
+    <div class="two-col">
+      <div class="field" id="f-festival">
+        <label for="festival">উৎসব বোনাস</label>
+        <div class="iw"><span class="tk">৳</span>
+          <input type="number" id="festival" inputmode="numeric" min="0" placeholder="0">
+        </div>
+        <div class="err">ঋণাত্মক মান দেওয়া যাবে না।</div>
+      </div>
+      <div class="field" id="f-other">
+        <label for="other">অন্যান্য বোনাস / আয়</label>
+        <div class="iw"><span class="tk">৳</span>
+          <input type="number" id="other" inputmode="numeric" min="0" placeholder="0">
+        </div>
+        <div class="err">ঋণাত্মক মান দেওয়া যাবে না।</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 3: Taxpayer info -->
+  <div class="card">
+    <div class="section-label">করদাতার তথ্য</div>
+    <div class="field" style="margin-bottom:14px">
+      <label for="taxpayerName">করদাতার নাম <span style="font-weight:400;color:var(--muted)">(PDF-এ দেখাবে)</span></label>
+      <input type="text" id="taxpayerName" placeholder="e.g. Mohammad Rahman (English only)">
+      <div style="font-size:11.5px;color:var(--muted);margin-top:4px">⚠️ অবশ্যই ইংরেজিতে লিখুন — বাংলায় লিখলে PDF-এ ভাঙা দেখাবে।</div>
+    </div>
+    <div class="field">
+      <label for="category">করদাতার ধরন</label>
+      <select id="category">
+        <option value="375000">সাধারণ পুরুষ — করমুক্ত সীমা ৩,৭৫,০০০ টাকা</option>
+        <option value="425000">মহিলা / ৬৫ বছর বা তার বেশি বয়সী — ৪,২৫,০০০ টাকা</option>
+        <option value="500000">তৃতীয় লিঙ্গ / প্রতিবন্ধী — ৫,০০,০০০ টাকা</option>
+        <option value="525000">গেজেটেড মুক্তিযোদ্ধা / জুলাই যোদ্ধা — ৫,২৫,০০০ টাকা</option>
+      </select>
+    </div>
+    <div class="two-col" style="margin-top:12px">
+      <div class="field">
+        <label for="disabledKids">প্রতিবন্ধী সন্তান/পোষ্যের সংখ্যা <span style="font-weight:400;color:var(--muted)">(প্রতিজনে +৫০,০০০)</span></label>
+        <div class="iw">
+          <input type="number" id="disabledKids" inputmode="numeric" min="0" max="20" placeholder="0" style="padding-left:12px">
+        </div>
+      </div>
+      <div class="field" id="f-tds">
+        <label for="tds">মোট TDS (কোম্পানি কর্তৃক কর্তিত)</label>
+        <div class="iw"><span class="tk">৳</span>
+          <input type="number" id="tds" inputmode="numeric" min="0" placeholder="0">
+        </div>
+        <div class="err">ঋণাত্মক মান দেওয়া যাবে না।</div>
+      </div>
+    </div>
+    <div class="check-row" style="margin-top:12px">
+      <input type="checkbox" id="newTaxpayer">
+      <label for="newTaxpayer">নতুন করদাতা <small>(নূন্যতম কর ৳১,০০০)</small></label>
+    </div>
+  </div>
+
+  <!-- Card: Existing investments -->
+  <div class="card">
+    <div class="section-label">বিদ্যমান বিনিয়োগ <span style="font-weight:400;color:var(--muted)">(যদি থাকে)</span></div>
+
+    <div class="field">
+      <label for="investType">বিনিয়োগের ধরন</label>
+      <select id="investType" onchange="handleInvestTypeChange()">
+        <option value="">-- ধরন বেছে নিন --</option>
+        <option value="insurance">জীবন বীমা প্রিমিয়াম</option>
+        <option value="provident">স্বীকৃত প্রভিডেন্ট ফান্ড</option>
+        <option value="superannuation">সুপারঅ্যানুয়েশন ফান্ড</option>
+        <option value="govt_sec">সরকারি সিকিউরিটিজ (সঞ্চয়পত্র, বন্ড ইত্যাদি) — সীমা ৳৫,০০,০০০</option>
+        <option value="mutual">মিউচুয়াল ফান্ড / ইউনিট সার্টিফিকেট / ETF — সীমা ৳৫,০০,০০০</option>
+        <option value="dps">ডিপিএস / মাসিক সঞ্চয় স্কিম — সীমা ৳১,২০,০০০</option>
+        <option value="bsec">BSEC তালিকাভুক্ত সিকিউরিটিজ</option>
+        <option value="hospital">দাতব্য হাসপাতালে দান (NBR অনুমোদিত)</option>
+        <option value="disabled">প্রতিবন্ধী কল্যাণ সংস্থায় দান</option>
+        <option value="zakat">যাকাত ফান্ড</option>
+        <option value="benevolent">বেনেভোলেন্ট ফান্ড / গ্রুপ ইনস্যুরেন্স</option>
+        <option value="education">শিক্ষা/উন্নয়নে বোর্ড অনুমোদিত প্রতিষ্ঠান</option>
+        <option value="liberation">মুক্তিযুদ্ধ জাদুঘর</option>
+      </select>
+    </div>
+
+    <!-- Insurance: two fields -->
+    <div id="insuranceFields" style="display:none" class="two-col">
+      <div class="field">
+        <label for="investPremium">মোট প্রিমিয়াম প্রদত্ত</label>
+        <div class="iw"><span class="tk">৳</span>
+          <input type="number" id="investPremium" inputmode="numeric" min="0" placeholder="0">
+        </div>
+      </div>
+      <div class="field">
+        <label for="investPolicy">পলিসি মূল্য (Policy Value)</label>
+        <div class="iw"><span class="tk">৳</span>
+          <input type="number" id="investPolicy" inputmode="numeric" min="0" placeholder="0">
+        </div>
+      </div>
+    </div>
+
+    <!-- Standard amount -->
+    <div id="standardInvestField" style="display:none" class="field">
+      <label>বিনিয়োগকৃত পরিমাণ <span id="investLimitHint" style="font-weight:400;color:var(--muted);font-size:12px"></span></label>
+      <div class="iw"><span class="tk">৳</span>
+        <input type="number" id="investAmount" inputmode="numeric" min="0" placeholder="0">
+      </div>
+    </div>
+
+    <button type="button" id="addInvestBtn" class="add-btn" onclick="addInvestment()">+ যোগ করুন</button>
+
+    <div id="investItems" style="margin-top:10px"></div>
+
+    <div id="investTotalRow" class="invest-total-row" style="display:none">
+      <span style="font-weight:700;font-size:14px">মোট অনুমোদনযোগ্য বিনিয়োগ</span>
+      <span id="totalAllowable" style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:15px">৳ 0</span>
+    </div>
+  </div>
+
+  <div class="reset-row">
+    <button type="button" class="reset" id="resetBtn">↺ সব মুছে দিন (Reset)</button>
+  </div>
+
+  <!-- ── Section 1: Income & Investment ── -->
+  <section aria-live="polite">
+    <div class="result-block">
+      <div class="block-title">আয় ও বিনিয়োগ রিবেট হিসাব</div>
+      <div class="row">
+        <span class="name">বার্ষিক আয় (Annual Income)</span>
+        <span class="value" id="v-annual">৳ 0</span>
+      </div>
+      <div class="row">
+        <span class="name">করমুক্ত অংশ (Tax-Free Amount)</span>
+        <span class="value" id="v-taxfree">৳ 0</span>
+      </div>
+      <div class="row">
+        <span class="name">করযোগ্য আয় (Taxable Income)</span>
+        <span class="value" id="v-taxable">৳ 0</span>
+      </div>
+      <div class="row" id="rebate-income-row">
+        <span class="name">সর্বোচ্চ রিবেট (Maximum Rebate)</span>
+        <span class="value" id="v-rebate">৳ 0</span>
+      </div>
+    </div>
+    <div class="final-box green">
+      <div class="flabel">প্রয়োজনীয় বিনিয়োগ · Required Investment</div>
+      <div class="famount" id="v-invest">৳ 0</div>
+      <div class="fmsg" id="investMsg">আয়ের তথ্য দিলে এখানে আপনার বিনিয়োগ লক্ষ্য দেখা যাবে।</div>
+    </div>
+
+    <!-- Investment analysis (shown when existing investments are entered) -->
+    <div id="investAnalysis" style="display:none;margin-top:8px">
+      <div class="row">
+        <span class="name">বিনিয়োগকৃত মোট (অনুমোদনযোগ্য)</span>
+        <span class="value" id="v-exist-invest">৳ 0</span>
+      </div>
+      <div class="row">
+        <span class="name">বিদ্যমান বিনিয়োগ থেকে রিবেট (×১৫%)</span>
+        <span class="value" id="v-exist-rebate">৳ 0</span>
+      </div>
+      <div class="row" id="remaining-row">
+        <span class="name">আরও বিনিয়োগ প্রয়োজন</span>
+        <span class="value" id="v-remaining-invest">৳ 0</span>
+      </div>
+      <div style="padding:8px 0 4px;font-size:13px;color:var(--green);font-weight:700" id="v-invest-status"></div>
+    </div>
+
+    <!-- ── Section 2: Tax slab ── -->
+    <div class="result-block" style="margin-top:28px">
+      <div class="block-title">স্ল্যাব ভিত্তিক আয়কর হিসাব</div>
+    </div>
+    <div class="slab-wrap">
+      <table class="slab">
+        <thead>
+          <tr>
+            <th>আয়ের স্তর</th>
+            <th>করযোগ্য অংশ</th>
+            <th>হার</th>
+            <th>কর</th>
+          </tr>
+        </thead>
+        <tbody id="slabRows">
+          <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:18px;font-size:13px">আয়ের তথ্য দিন</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="row" style="margin-top:4px">
+      <span class="name">মোট কর (Gross Tax)</span>
+      <span class="value" id="v-gross">৳ 0</span>
+    </div>
+    <div class="row" id="rebate-row">
+      <span class="name">বিনিয়োগ রিবেট (Investment Rebate)</span>
+      <span class="value deduct" id="v-rebate2">− ৳ 0</span>
+    </div>
+    <div class="row">
+      <span class="name">প্রদেয় আয়কর (Net Tax Payable)</span>
+      <span class="value" id="v-nettax-row">৳ 0</span>
+    </div>
+    <div class="row">
+      <span class="name">কর্তনকৃত TDS (Deducted at Source)</span>
+      <span class="value deduct" id="v-tds-row">− ৳ 0</span>
+    </div>
+    <div class="final-box navy">
+      <div class="flabel" id="finalTaxLabel">রিটার্নে পরিশোধযোগ্য কর · Tax to Pay</div>
+      <div class="famount" id="v-nettax">৳ 0</div>
+      <div class="fmsg" id="taxMsg">আয়ের তথ্য দিলে প্রদেয় কর এখানে দেখাবে।</div>
+    </div>
+  </section>
+
+  <!-- Print / PDF button -->
+  <button type="button" class="print-btn" id="printBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6 17H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2"/>
+      <rect x="6" y="13" width="12" height="8" rx="1"/>
+      <path d="M6 7V3h12v4"/>
+    </svg>
+    PDF হিসেবে সেভ করুন
+  </button>
+
+  <!-- Investment options table -->
+  <section class="options">
+    <h2>কোথায় বিনিয়োগ করবেন — Allowable Investment Options</h2>
+    <p class="sub">নিচের খাতগুলোতে বিনিয়োগ বা দান করলে ট্যাক্স ক্রেডিট পাওয়া যায়।</p>
+    <table>
+      <thead><tr><th>খাত / Details</th><th>সর্বোচ্চ সীমা</th></tr></thead>
+      <tbody>
+        <tr><td>জীবন বীমা প্রিমিয়াম (Life insurance premium)</td><td class="lim">পলিসি মূল্যের 10%</td></tr>
+        <tr><td>স্বীকৃত প্রভিডেন্ট ফান্ডে নিয়োগকর্তা ও কর্মীর অবদান</td><td class="lim">No limit</td></tr>
+        <tr><td>সুপারঅ্যানুয়েশন ফান্ডে অবদান</td><td class="lim">No limit</td></tr>
+        <tr>
+          <td>সরকারি সিকিউরিটিজে বিনিয়োগ (Treasury bill, Bond, সঞ্চয়পত্র, Debenture, শরিয়াহভিত্তিক সিকিউরিটিজ)</td>
+          <td class="lim">৳ 5,00,000</td>
+        </tr>
+        <tr>
+          <td>ইউনিট সার্টিফিকেট, মিউচুয়াল ফান্ড, ETF বা যৌথ বিনিয়োগ স্কিম</td>
+          <td class="lim">৳ 5,00,000</td>
+        </tr>
+        <tr><td>ডিপোজিট পেনশন স্কিম (DPS) বা মাসিক সঞ্চয় স্কিম</td><td class="lim">৳ 1,20,000</td></tr>
+        <tr><td>BSEC নিয়ন্ত্রিত স্টক এক্সচেঞ্জের তালিকাভুক্ত সিকিউরিটিজে বিনিয়োগ</td><td class="lim">No limit</td></tr>
+        <tr><td>NBR অনুমোদিত দাতব্য হাসপাতালে দান (সিটি কর্পোরেশন এলাকার বাইরে)</td><td class="lim">No limit</td></tr>
+        <tr><td>প্রতিবন্ধী কল্যাণে প্রতিষ্ঠিত সংস্থায় দান</td><td class="lim">No limit</td></tr>
+        <tr><td>যাকাত ফান্ড / Zakat Fund Management Act, 2023 অনুযায়ী দাতব্য ফান্ডে দান</td><td class="lim">No limit</td></tr>
+        <tr><td>NBR অনুমোদিত বেনেভোলেন্ট ফান্ড ও গ্রুপ ইনস্যুরেন্স স্কিমে অবদান</td><td class="lim">No limit</td></tr>
+        <tr><td>জনউন্নয়ন বা শিক্ষার জন্য বোর্ড অনুমোদিত প্রতিষ্ঠানে দান</td><td class="lim">No limit</td></tr>
+        <tr><td>মুক্তিযুদ্ধ জাদুঘরে দান (Liberation War Museum)</td><td class="lim">No limit</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</div><!-- /wrap -->
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <span class="f-name">Md. Nur Uddin Mahmud</span>
+      <span class="f-role">Income Tax Practitioner</span>
+      <span class="f-role">BBA & MBA, University of Chittagong</span>
+    </div>
+    <a class="wa-link" href="https://wa.me/8801521222707" target="_blank" rel="noopener" aria-label="WhatsApp: 01521222707">
+      <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+        <path d="M16.04 3C9.42 3 4.05 8.36 4.05 14.97c0 2.11.55 4.17 1.6 5.99L4 29l8.21-1.6a12 12 0 0 0 3.83.62h.01c6.61 0 11.98-5.36 11.98-11.97A11.9 11.9 0 0 0 16.04 3zm0 21.9h-.01a9.9 9.9 0 0 1-3.46-.66l-.25-.1-4.87.95.98-4.74-.16-.26a9.92 9.92 0 0 1-1.52-5.12c0-5.48 4.47-9.94 9.96-9.94a9.9 9.9 0 0 1 9.95 9.95c0 5.48-4.47 9.92-9.62 9.92zm5.46-7.43c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49 0 1.47 1.07 2.89 1.22 3.09.15.2 2.11 3.22 5.1 4.51.71.31 1.27.49 1.7.63.72.23 1.37.2 1.88.12.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35z"/>
+      </svg>
+      <span class="wa-num">01521222707</span>
+    </a>
+  </div>
+</footer>
+
+<script>
+(function(){
+
+  /* ─── Month definitions ─── */
+  const MONTHS = [
+    {key:'jul',bn:'জুলাই',   en:'Jul'},
+    {key:'aug',bn:'আগস্ট',   en:'Aug'},
+    {key:'sep',bn:'সেপ্টেম্বর',en:'Sep'},
+    {key:'oct',bn:'অক্টোবর', en:'Oct'},
+    {key:'nov',bn:'নভেম্বর', en:'Nov'},
+    {key:'dec',bn:'ডিসেম্বর',en:'Dec'},
+    {key:'jan',bn:'জানুয়ারি',en:'Jan'},
+    {key:'feb',bn:'ফেব্রুয়ারি',en:'Feb'},
+    {key:'mar',bn:'মার্চ',   en:'Mar'},
+    {key:'apr',bn:'এপ্রিল', en:'Apr'},
+    {key:'may',bn:'মে',      en:'May'},
+    {key:'jun',bn:'জুন',     en:'Jun'},
+  ];
+
+  /* ─── Build month grid ─── */
+  const grid = document.getElementById('monthsGrid');
+  MONTHS.forEach(m => {
+    const d = document.createElement('div');
+    d.className = 'month-field';
+    d.innerHTML =
+      '<label for="m-'+m.key+'">'+m.bn+'<span class="fiscal">('+m.en+')</span></label>'+
+      '<div class="mini-wrap"><span class="tk">৳</span>'+
+      '<input type="number" id="m-'+m.key+'" inputmode="numeric" min="0" placeholder="0"></div>';
+    grid.appendChild(d);
+  });
+
+  const monthInputs = () => MONTHS.map(m => document.getElementById('m-'+m.key));
+
+  /* ─── Helpers ─── */
+  const fmt = new Intl.NumberFormat('en-IN',{maximumFractionDigits:0});
+  const num = n => fmt.format(Math.round(n));
+  const bdt = n => '৳ '+num(n);
+
+  function readMonth(inp){
+    const v = inp.value.trim();
+    if(v===''){inp.classList.remove('invalid');return 0;}
+    const n = Number(v);
+    if(!isFinite(n)||n<0){inp.classList.add('invalid');return null;}
+    inp.classList.remove('invalid');
+    return n;
+  }
+
+  const bonusFields = {
+    festival:{input:document.getElementById('festival'),wrap:document.getElementById('f-festival')},
+    other:   {input:document.getElementById('other'),   wrap:document.getElementById('f-other')},
+    tds:     {input:document.getElementById('tds'),     wrap:document.getElementById('f-tds')},
+  };
+
+  function setErr(f,on){
+    f.wrap.classList.toggle('has-error',on);
+    f.input.classList.toggle('invalid',on);
+  }
+  function readBonus(f){
+    const v=f.input.value.trim();
+    if(v===''){setErr(f,false);return 0;}
+    const n=Number(v);
+    if(!isFinite(n)||n<0){setErr(f,true);return null;}
+    setErr(f,false);return n;
+  }
+
+  /* ─── Exemption limit ─── */
+  function getExemptionLimit(){
+    const base   = parseInt(document.getElementById('category').value);
+    const kids   = Math.max(0, parseInt(document.getElementById('disabledKids').value)||0);
+    return base + kids*50000;
+  }
+
+  /* ─── Slab calculator ─── */
+  function slabTax(income, exemptionLimit){
+    const bands = [
+      {lbl:'করমুক্ত (প্রথম '+num(exemptionLimit)+')',  size:exemptionLimit, rate:0},
+      {lbl:'পরবর্তী ৩,০০,০০০',  size:300000,  rate:0.10},
+      {lbl:'পরবর্তী ৪,০০,০০০',  size:400000,  rate:0.15},
+      {lbl:'পরবর্তী ৫,০০,০০০',  size:500000,  rate:0.20},
+      {lbl:'পরবর্তী ২০,০০,০০০', size:2000000, rate:0.30},
+      {lbl:'অবশিষ্ট',           size:Infinity,rate:0.30},
+    ];
+    let rem = income, total = 0;
+    const rows = [];
+    for(const b of bands){
+      if(rem<=0) break;
+      const inBand = b.size===Infinity ? rem : Math.min(rem, b.size);
+      const tax    = inBand * b.rate;
+      rows.push({lbl:b.lbl, inBand, rate:b.rate, tax});
+      total += tax;
+      rem   -= inBand;
+    }
+    return {total:Math.round(total), rows};
+  }
+
+  /* ─── Render slab table ─── */
+  function renderSlab(rows){
+    const tbody = document.getElementById('slabRows');
+    if(!rows||rows.length===0){
+      tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:18px;font-size:13px">আয়ের তথ্য দিন</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(r=>{
+      const isZero = r.rate===0;
+      const rateStr = (r.rate*100)+'%';
+      return '<tr>'+
+        '<td>'+r.lbl+'</td>'+
+        '<td class="amt-col">'+bdt(r.inBand)+'</td>'+
+        '<td class="rate-col '+(isZero?'zero':'')+'">'+rateStr+'</td>'+
+        '<td class="tax-col '+(isZero?'zero':'')+'">'+bdt(r.tax)+'</td>'+
+      '</tr>';
+    }).join('');
+  }
+
+  /* ─── Main calculate ─── */
+  function calculate(){
+    // 1. Months
+    let salaryTotal=0, monthErr=false;
+    monthInputs().forEach(inp=>{
+      const v=readMonth(inp);
+      if(v===null) monthErr=true; else salaryTotal+=v;
+    });
+
+    // 2. Bonuses + TDS
+    const festival = readBonus(bonusFields.festival);
+    const other    = readBonus(bonusFields.other);
+    const tds      = readBonus(bonusFields.tds);
+
+    if(monthErr||festival===null||other===null||tds===null){
+      document.getElementById('investMsg').textContent='ইনপুটে ভুল আছে।';
+      document.getElementById('taxMsg').textContent='ইনপুটে ভুল আছে।';
+      return;
+    }
+
+    // 3. Income calc
+    const annual   = salaryTotal + festival + other;
+    const taxFree  = Math.min(annual/3, 500000);
+    const taxable  = annual - taxFree;
+    const maxRebate= Math.round(taxable * 0.03);
+    const reqInvest= Math.round(maxRebate / 0.15);
+
+    document.getElementById('v-annual').textContent  = bdt(annual);
+    document.getElementById('v-taxfree').textContent = bdt(taxFree);
+    document.getElementById('v-taxable').textContent = bdt(taxable);
+    document.getElementById('v-rebate').textContent  = bdt(maxRebate);
+    document.getElementById('v-invest').textContent  = bdt(reqInvest);
+
+    // 5. Tax slab calc
+    const exemptionLimit = getExemptionLimit();
+    const {total:grossTax, rows} = slabTax(taxable, exemptionLimit);
+
+    renderSlab(annual>0 ? rows : null);
+
+    document.getElementById('v-gross').textContent = bdt(grossTax);
+
+    // Minimum tax rules:
+    // grossTax = 0 + new taxpayer  → ৳1,000
+    // grossTax = 0 + others        → ৳0
+    // 0 < grossTax ≤ 5000          → ৳5,000 (min), rebate has NO effect
+    // grossTax > 5000              → max(grossTax - rebate, 5,000)
+    //   └ rebate useful only for the portion above 5,000
+    const isNew = document.getElementById('newTaxpayer').checked;
+    let finalTax    = 0;
+    let minApplied  = false;
+    let appliedRebate = 0;   // rebate that actually reduces tax
+    let usefulInvest  = 0;   // investment required for that rebate
+
+    if(grossTax > 5000){
+      const afterRebate = grossTax - maxRebate;
+      finalTax    = Math.max(afterRebate, 5000);
+      minApplied  = afterRebate < 5000;
+      if(minApplied){
+        // Can only reduce down to 5000
+        appliedRebate = grossTax - 5000;
+        usefulInvest  = Math.round(appliedRebate / 0.15);
+      } else {
+        appliedRebate = maxRebate;
+        usefulInvest  = reqInvest;
+      }
+    } else if(grossTax > 0){
+      // 1 – 5000: minimum kicks in, rebate has zero effect
+      finalTax   = 5000;
+      minApplied = true;
+    } else if(isNew){
+      finalTax   = 1000;
+      minApplied = true;
+    }
+
+    // Show applied rebate in slab section
+    document.getElementById('v-rebate2').textContent = '− '+bdt(appliedRebate);
+
+    // 4. Investment section — depends on whether rebate is useful
+    const investUseful = grossTax > 5000;  // only when slab tax exceeds minimum
+
+    document.getElementById('rebate-row').style.display        = investUseful ? '' : 'none';
+    document.getElementById('rebate-income-row').style.display = investUseful ? '' : 'none';
+
+    if(annual <= 0){
+      document.getElementById('v-invest').textContent  = bdt(0);
+      document.getElementById('investMsg').textContent = 'আয়ের তথ্য দিলে এখানে আপনার বিনিয়োগ লক্ষ্য দেখা যাবে।';
+    } else if(!investUseful){
+      document.getElementById('v-invest').textContent = 'প্রযোজ্য নয়';
+      document.getElementById('investMsg').innerHTML  =
+        'বিনিয়োগ করলেও প্রদেয় কর কমবে না — <strong>বিনিয়োগের প্রয়োজন নেই।</strong>';
+    } else if(minApplied){
+      document.getElementById('v-invest').textContent = bdt(usefulInvest);
+      // investMsg will be set in the analysis block below
+    } else {
+      document.getElementById('v-invest').textContent = bdt(usefulInvest);
+      // investMsg will be set in the analysis block below
+    }
+
+    document.getElementById('v-nettax-row').textContent = bdt(finalTax);
+    document.getElementById('v-tds-row').textContent    = '− '+bdt(tds);
+
+    // Balance after TDS
+    const balance = finalTax - tds;
+    const isRefund = balance < 0;
+    const labelEl  = document.getElementById('finalTaxLabel');
+    const amountEl = document.getElementById('v-nettax');
+
+    labelEl.textContent  = isRefund
+      ? 'ফেরতযোগ্য কর (Tax Refund)'
+      : 'রিটার্নে পরিশোধযোগ্য কর · Tax to Pay';
+    amountEl.textContent = bdt(Math.abs(balance));
+    amountEl.style.color = isRefund ? '#7ee8a2' : '#f7d489';
+
+    // Tax message
+    if(annual <= 0){
+      document.getElementById('taxMsg').textContent='আয়ের তথ্য দিলে প্রদেয় কর এখানে দেখাবে।';
+    } else if(grossTax === 0 && !isNew){
+      document.getElementById('taxMsg').innerHTML='করযোগ্য আয় করমুক্ত সীমার মধ্যে। <strong>কোনো কর দিতে হবে না।</strong>';
+    } else if(grossTax === 0 && isNew){
+      document.getElementById('taxMsg').innerHTML='করযোগ্য আয় করমুক্ত সীমার মধ্যে, তবে নতুন করদাতা হওয়ায় <strong>নূন্যতম কর ৳১,০০০</strong> প্রদেয়।';
+    } else if(isRefund){
+      document.getElementById('taxMsg').innerHTML=
+        'প্রদেয় কর <strong>'+bdt(finalTax)+'</strong> এর বিপরীতে TDS কাটা হয়েছে <strong>'+bdt(tds)+'</strong>। রিটার্নে <strong>'+bdt(Math.abs(balance))+'</strong> ফেরত পাবেন।';
+    } else if(grossTax > 0 && grossTax <= 5000){
+      document.getElementById('taxMsg').innerHTML=
+        'মোট কর ৳'+num(grossTax)+' হলেও নূন্যতম কর <strong>৳ ৫,০০০</strong> প্রযোজ্য। TDS বাদে <strong>'+bdt(balance)+'</strong> পরিশোধ করতে হবে।';
+    } else if(minApplied){
+      document.getElementById('taxMsg').innerHTML=
+        'মোট কর <strong>'+bdt(grossTax)+'</strong> — রিবেট বাদে সর্বোচ্চ ৳৫,০০০ পর্যন্ত কমানো সম্ভব। TDS বাদে <strong>'+bdt(balance)+'</strong> পরিশোধ করতে হবে।';
+    } else {
+      document.getElementById('taxMsg').innerHTML=
+        'মোট কর <strong>'+bdt(grossTax)+'</strong> থেকে রিবেট ও TDS বাদে <strong>'+bdt(balance)+'</strong> পরিশোধ করতে হবে।';
+    }
+
+    // Monthly TDS: tax on (salary + festival bonus only) / 12
+    const festivalRaw = parseFloat(bonusFields.festival.input.value)||0;
+    const tdsBase     = salaryTotal + festivalRaw;
+    const tdsDeduct   = Math.min(tdsBase / 3, 500000);
+    const tdsTaxable  = tdsBase - tdsDeduct;
+    const { total: tdsGross } = slabTax(tdsTaxable, exemptionLimit);
+    let tdsFinal = 0;
+    if(tdsGross > 5000){
+      tdsFinal = Math.max(tdsGross - Math.round(tdsTaxable * 0.03), 5000);
+    } else if(tdsGross > 0){
+      tdsFinal = 5000;
+    } else if(isNew){
+      tdsFinal = 1000;
+    }
+    const monthlyTDS = Math.round(tdsFinal / 12);
+
+    // Existing investment analysis
+    const totalAllowableInvest = computeEffectiveAllowable(existingInvestments);
+    const existRebate   = Math.min(Math.round(totalAllowableInvest * 0.15), appliedRebate);
+    const remainInvest  = (investUseful && totalAllowableInvest > 0)
+      ? Math.max(Math.round((appliedRebate - existRebate) / 0.15), 0) : 0;
+
+    if(investUseful && totalAllowableInvest > 0){
+      document.getElementById('investAnalysis').style.display = 'block';
+      document.getElementById('v-exist-invest').textContent  = bdt(totalAllowableInvest);
+      document.getElementById('v-exist-rebate').textContent  = bdt(existRebate);
+      if(remainInvest <= 0){
+        document.getElementById('remaining-row').style.display = 'none';
+        document.getElementById('v-invest-status').textContent = '✓ সর্বোচ্চ রিবেট অর্জিত হয়েছে';
+        // Update green box message
+        document.getElementById('investMsg').innerHTML =
+          '<strong>✓ সর্বোচ্চ রিবেট অর্জিত।</strong> বিদ্যমান বিনিয়োগ <strong>'+bdt(totalAllowableInvest)+'</strong> থেকে <strong>'+bdt(existRebate)+'</strong> রিবেট পাবেন।';
+      } else {
+        document.getElementById('remaining-row').style.display = 'flex';
+        document.getElementById('v-remaining-invest').textContent = bdt(remainInvest);
+        document.getElementById('v-invest-status').textContent = '';
+        // Update green box message to show remaining
+        document.getElementById('investMsg').innerHTML =
+          'বিদ্যমান বিনিয়োগ <strong>'+bdt(totalAllowableInvest)+'</strong>। সর্বোচ্চ রিবেটের জন্য আরও <strong style="color:#f7d489">'+bdt(remainInvest)+'</strong> বিনিয়োগ করুন।';
+      }
+    } else {
+      document.getElementById('investAnalysis').style.display = 'none';
+      // Restore original invest message when no existing investments
+      if(investUseful){
+        if(minApplied){
+          document.getElementById('investMsg').innerHTML =
+            'মোট কর <strong>'+bdt(grossTax)+'</strong> — নূন্যতম কর ৳৫,০০০ পর্যন্ত কমাতে <strong>'+bdt(usefulInvest)+'</strong> বিনিয়োগ করলে <strong>'+bdt(appliedRebate)+'</strong> রিবেট পাবেন।';
+        } else {
+          document.getElementById('investMsg').innerHTML =
+            'সর্বোচ্চ <strong>'+bdt(appliedRebate)+'</strong> রিবেট পেতে আনুমানিক <strong>'+bdt(usefulInvest)+'</strong> বিনিয়োগ করতে হবে।';
+        }
+      }
+    }
+
+    // Store results for PDF generation
+    window.pdfData = {
+      annual, taxFree, taxable, maxRebate, reqInvest,
+      appliedRebate, usefulInvest, investUseful,
+      grossTax, finalTax, tds, balance, isRefund, minApplied,
+      slabRows: rows, exemptionLimit, monthlyTDS,
+      existingInvestments: existingInvestments.map(x=>({
+        labelEn:x.opt.labelEn, label:x.opt.label,
+        amount:x.amount, policyValue:x.policyValue,
+        allowable:x.allowable, capped:x.amount>x.allowable
+      })),
+      totalAllowableInvest, existRebate, remainInvest
+    };
+  }
+
+  /* ─── Investment options ─── */
+  const INVEST_OPTS = [
+    {id:'insurance',      label:'জীবন বীমা প্রিমিয়াম',                 labelEn:'Life Insurance Premium',           limit:null,   special:'insurance'},
+    {id:'provident',      label:'স্বীকৃত প্রভিডেন্ট ফান্ড',              labelEn:'Recognized Provident Fund',        limit:null},
+    {id:'superannuation', label:'সুপারঅ্যানুয়েশন ফান্ড',                 labelEn:'Superannuation Fund',              limit:null},
+    {id:'govt_sec',       label:'সরকারি সিকিউরিটিজ',                     labelEn:'Govt. Securities',                 limit:500000},
+    {id:'mutual',         label:'মিউচুয়াল ফান্ড / ইউনিট / ETF',          labelEn:'Mutual Funds / Unit Cert. / ETF', limit:500000},
+    {id:'dps',            label:'ডিপিএস / মাসিক সঞ্চয় স্কিম',            labelEn:'DPS / Monthly Savings Scheme',     limit:120000},
+    {id:'bsec',           label:'BSEC তালিকাভুক্ত সিকিউরিটিজ',           labelEn:'BSEC Listed Securities',           limit:null},
+    {id:'hospital',       label:'দাতব্য হাসপাতালে দান',                  labelEn:'Charitable Hospital Donation',     limit:null},
+    {id:'disabled',       label:'প্রতিবন্ধী কল্যাণ সংস্থায় দান',          labelEn:'Disabled Welfare Donation',        limit:null},
+    {id:'zakat',          label:'যাকাত ফান্ড',                            labelEn:'Zakat Fund',                       limit:null},
+    {id:'benevolent',     label:'বেনেভোলেন্ট ফান্ড / গ্রুপ ইনস্যুরেন্স',  labelEn:'Benevolent Fund & Group Insurance',limit:null},
+    {id:'education',      label:'শিক্ষা/উন্নয়নে প্রতিষ্ঠান',             labelEn:'Education / Dev. Institution',     limit:null},
+    {id:'liberation',     label:'মুক্তিযুদ্ধ জাদুঘর',                    labelEn:'Liberation War Museum',            limit:null},
+  ];
+
+  let existingInvestments = [];
+
+  function calcAllowable(opt, amount, policyValue){
+    if(opt.special==='insurance') return Math.min(amount, (policyValue||0)*0.10);
+    return opt.limit ? Math.min(amount, opt.limit) : amount;
+  }
+
+  // Combined caps: these limits apply to the TOTAL across all entries of that type
+  const COMBINED_CAPS = { dps: 120000 };
+
+  function computeEffectiveAllowable(investments){
+    const groupedAmts = {};
+    let total = 0;
+    investments.forEach(item => {
+      const id = item.opt.id;
+      if(COMBINED_CAPS[id] !== undefined){
+        groupedAmts[id] = (groupedAmts[id]||0) + item.amount;
+      } else {
+        total += item.allowable;
+      }
+    });
+    Object.entries(groupedAmts).forEach(([id, amt]) => {
+      total += Math.min(amt, COMBINED_CAPS[id]);
+    });
+    return total;
+  }
+
+  function renderInvestItems(){
+    const container = document.getElementById('investItems');
+    const fmtI = n=>'৳ '+new Intl.NumberFormat('en-IN',{maximumFractionDigits:0}).format(Math.round(n));
+    if(existingInvestments.length===0){
+      container.innerHTML='<div style="color:var(--muted);font-size:13px;padding:4px 0">কোনো বিনিয়োগ যোগ করা হয়নি।</div>';
+      document.getElementById('investTotalRow').style.display='none';
+    } else {
+      container.innerHTML=existingInvestments.map((item,i)=>{
+        const capped=item.amount>item.allowable;
+        const sub=item.opt.special==='insurance'
+          ?'প্রিমিয়াম: '+fmtI(item.amount)+' | পলিসি মূল্য: '+fmtI(item.policyValue)
+          :'বিনিয়োগ: '+fmtI(item.amount);
+        const capNote=capped?'<div class="inv-cap">⚠ সীমা অতিক্রম — গণনায় '+fmtI(item.allowable)+'</div>':'';
+        return '<div class="invest-item">'+
+          '<div><div class="inv-name">'+item.opt.label+'</div>'+
+          '<div class="inv-sub">'+sub+'</div>'+capNote+'</div>'+
+          '<div style="display:flex;align-items:center;gap:8px">'+
+          '<div class="inv-allowable">'+fmtI(item.amount)+'</div>'+
+          '<button class="inv-del" onclick="removeInvestment('+i+')" title="মুছুন">×</button>'+
+          '</div></div>';
+      }).join('');
+
+      // Combined DPS cap warning
+      const dpsTotal = existingInvestments.filter(x=>x.opt.id==='dps').reduce((s,x)=>s+x.amount, 0);
+      if(dpsTotal > 120000){
+        container.innerHTML += '<div style="color:#b06000;font-size:12px;padding:7px 4px;border-top:1px dashed var(--line);margin-top:2px">'+
+          '⚠ মোট DPS/মাসিক সঞ্চয়: '+fmtI(dpsTotal)+' — একত্রে সর্বোচ্চ সীমা ৳১,২০,০০০। গণনায় ৳১,২০,০০০ প্রযোজ্য হবে।</div>';
+      }
+
+      const total=computeEffectiveAllowable(existingInvestments);
+      document.getElementById('totalAllowable').textContent=fmtI(total);
+      document.getElementById('investTotalRow').style.display='flex';
+    }
+    calculate();
+  }
+
+  window.handleInvestTypeChange=function(){
+    const typeId=document.getElementById('investType').value;
+    const opt=INVEST_OPTS.find(o=>o.id===typeId);
+    const insDiv=document.getElementById('insuranceFields');
+    const stdDiv=document.getElementById('standardInvestField');
+    const addBtn=document.getElementById('addInvestBtn');
+    if(!typeId||!opt){insDiv.style.display='none';stdDiv.style.display='none';addBtn.style.display='none';return;}
+    if(opt.special==='insurance'){insDiv.style.display='grid';stdDiv.style.display='none';}
+    else{
+      insDiv.style.display='none';stdDiv.style.display='block';
+      document.getElementById('investLimitHint').textContent=
+        opt.limit?'(সর্বোচ্চ ৳'+new Intl.NumberFormat('en-IN').format(opt.limit)+')':'(কোনো সীমা নেই)';
+    }
+    addBtn.style.display='block';
+  };
+
+  window.addInvestment=function(){
+    const typeId=document.getElementById('investType').value;
+    if(!typeId){alert('বিনিয়োগের ধরন বেছে নিন।');return;}
+    const opt=INVEST_OPTS.find(o=>o.id===typeId);
+    if(opt.special==='insurance'){
+      const premium=parseFloat(document.getElementById('investPremium').value)||0;
+      const policy=parseFloat(document.getElementById('investPolicy').value)||0;
+      if(premium<=0){alert('মোট প্রিমিয়াম দিন।');return;}
+      if(policy<=0){alert('পলিসি মূল্য দিন।');return;}
+      existingInvestments.push({opt,amount:premium,policyValue:policy,allowable:calcAllowable(opt,premium,policy)});
+      document.getElementById('investPremium').value='';
+      document.getElementById('investPolicy').value='';
+    } else {
+      const amount=parseFloat(document.getElementById('investAmount').value)||0;
+      if(amount<=0){alert('বিনিয়োগের পরিমাণ দিন।');return;}
+      existingInvestments.push({opt,amount,policyValue:0,allowable:calcAllowable(opt,amount,0)});
+      document.getElementById('investAmount').value='';
+    }
+    document.getElementById('investType').value='';
+    document.getElementById('insuranceFields').style.display='none';
+    document.getElementById('standardInvestField').style.display='none';
+    document.getElementById('addInvestBtn').style.display='none';
+    renderInvestItems();
+  };
+
+  window.removeInvestment=function(idx){
+    existingInvestments.splice(idx,1);
+    renderInvestItems();
+  };
+
+  /* ─── Event listeners ─── */
+  monthInputs().forEach(inp=>inp.addEventListener('input',calculate));
+  Object.values(bonusFields).forEach(f=>f.input.addEventListener('input',calculate));
+  document.getElementById('category').addEventListener('change',calculate);
+  document.getElementById('disabledKids').addEventListener('input',calculate);
+  document.getElementById('newTaxpayer').addEventListener('change',calculate);
+
+  document.getElementById('resetBtn').addEventListener('click',()=>{
+    if(!confirm('সব তথ্য মুছে দিতে চান?\nএই কাজটি পূর্বাবস্থায় ফেরানো যাবে না।')) return;
+    monthInputs().forEach(inp=>{inp.value='';inp.classList.remove('invalid');});
+    Object.values(bonusFields).forEach(f=>{f.input.value='';setErr(f,false);});
+    document.getElementById('disabledKids').value='';
+    document.getElementById('taxpayerName').value='';
+    document.getElementById('newTaxpayer').checked=false;
+    document.getElementById('category').value='375000';
+    document.getElementById('v-nettax').style.color='#f7d489';
+    existingInvestments=[];
+    renderInvestItems();
+    document.getElementById('investType').value='';
+    document.getElementById('insuranceFields').style.display='none';
+    document.getElementById('standardInvestField').style.display='none';
+    document.getElementById('addInvestBtn').style.display='none';
+    calculate();
+  });
+
+  document.getElementById('printBtn').addEventListener('click', () => {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      alert('PDF লাইব্রেরি লোড হয়নি। পেজ রিফ্রেশ করুন।'); return;
+    }
+    const r = window.pdfData;
+    if (!r || !r.annual) {
+      alert('আগে আয়ের তথ্য দিন, তারপর PDF ডাউনলোড করুন।'); return;
+    }
+
+    const btn = document.getElementById('printBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<svg style="width:18px;height:18px;animation:spin 1s linear infinite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> তৈরি হচ্ছে...';
+
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'mm', 'a4');
+      const W = doc.internal.pageSize.getWidth();
+      const M = 16;
+      let y = M;
+
+      const fmtN = n => new Intl.NumberFormat('en-IN',{maximumFractionDigits:0}).format(Math.round(n||0));
+      const bdt2 = n => 'BDT ' + fmtN(n);
+      const today = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+
+      const tpName = (document.getElementById('taxpayerName').value.trim()) || 'Taxpayer';
+      const catVal = document.getElementById('category').value;
+      const catMapEng = {
+        '375000': 'General Male (Limit: BDT 3,75,000)',
+        '425000': 'Female / 65+ Years (Limit: BDT 4,25,000)',
+        '500000': 'Third Gender / Disabled (Limit: BDT 5,00,000)',
+        '525000': 'Freedom Fighter / July Warrior (Limit: BDT 5,25,000)'
+      };
+      const catText = catMapEng[catVal] || 'General Male';
+      const isNew  = document.getElementById('newTaxpayer').checked;
+      const kids   = parseInt(document.getElementById('disabledKids').value)||0;
+
+      const getTaxMsg = () => {
+        if (r.isRefund) return 'TDS '+bdt2(r.tds)+' exceeds tax '+bdt2(r.finalTax)+'. Refund: '+bdt2(Math.abs(r.balance));
+        if (r.grossTax === 0 && isNew)  return 'Income within tax-free limit. Min. tax BDT 1,000 applies (new taxpayer).';
+        if (r.grossTax === 0)           return 'Income within tax-free limit. No tax payable.';
+        if (r.grossTax > 0 && r.grossTax <= 5000) return 'Gross tax BDT '+fmtN(r.grossTax)+'. Minimum tax of BDT 5,000 applies.';
+        if (r.minApplied) return 'Tax reducible to min. BDT 5,000 via investment rebate. After TDS: '+bdt2(r.balance)+' to pay.';
+        return 'Gross tax '+bdt2(r.grossTax)+' minus rebate & TDS: '+bdt2(r.balance)+' payable.';
+      };
+
+      // ── HEADER ──────────────────────────
+      doc.setFillColor(255,255,255);
+      doc.rect(0, 0, W, 36, 'F');
+      doc.setDrawColor(11,61,46); doc.setLineWidth(1.2);
+      doc.line(0, 36, W, 36);
+      doc.setLineWidth(0.2);
+
+      // Left: Taxpayer name + subtitle
+      doc.setFontSize(15); doc.setFont('helvetica','bold');
+      doc.setTextColor(11,61,46);
+      doc.text(tpName, M, 14);
+
+      doc.setFontSize(8.5); doc.setFont('helvetica','normal');
+      doc.setTextColor(91,110,100);
+      doc.text('Income Tax Calculation  |  AY 2026-27 & 2027-28', M, 24);
+
+      // Right: "Income Tax Calculator" large, then developed by + LinkedIn icon + date
+      doc.setFontSize(12); doc.setFont('helvetica','bold');
+      doc.setTextColor(11,61,46);
+      doc.text('Income Tax Calculator', W-M, 12, {align:'right'});
+
+      doc.setFontSize(7.5); doc.setFont('helvetica','normal');
+      doc.setTextColor(91,110,100);
+      const devByLine = 'Developed by: Md. Nur Uddin Mahmud';
+      doc.text(devByLine, W-M, 20, {align:'right'});
+      // LinkedIn icon placed to the left of "Developed by" text
+      const liHSz = 3.5;
+      const liHX  = W - M - doc.getTextWidth(devByLine) - liHSz - 2;
+      const liHY  = 17;
+      doc.setFillColor(0,119,181);
+      doc.roundedRect(liHX, liHY, liHSz, liHSz, 0.5, 0.5, 'F');
+      doc.setFontSize(3.2); doc.setFont('helvetica','bold'); doc.setTextColor(255,255,255);
+      doc.text('in', liHX+0.6, liHY+liHSz-0.7);
+      doc.link(liHX, liHY, liHSz, liHSz, {url:'https://www.linkedin.com/in/nmahmudcu/'});
+
+      doc.setFontSize(7.5); doc.setFont('helvetica','normal');
+      doc.setTextColor(91,110,100);
+      doc.text('Date: '+today, W-M, 27, {align:'right'});
+
+      y = 44;
+
+      // ── helpers ──────────────────────────
+      const secTitle = (t) => {
+        doc.setFontSize(7.5); doc.setFont('helvetica','bold');
+        doc.setTextColor(11,61,46);
+        doc.text(t, M, y);
+        doc.setDrawColor(11,61,46); doc.setLineWidth(0.4);
+        doc.line(M, y+1.5, W-M, y+1.5);
+        doc.setLineWidth(0.2); doc.setTextColor(28,36,32);
+        y += 7;
+      };
+
+      const rowPDF = (label, value, bold) => {
+        doc.setFontSize(9.5);
+        doc.setFont('helvetica', bold ? 'bold' : 'normal');
+        doc.setTextColor(bold ? 28 : 80, bold ? 36 : 90, bold ? 32 : 85);
+        doc.text(label, M, y);
+        doc.setFont('helvetica','bold'); doc.setTextColor(28,36,32);
+        doc.text(value, W-M, y, {align:'right'});
+        doc.setDrawColor(220,225,222); doc.setLineWidth(0.15);
+        doc.line(M, y+1.5, W-M, y+1.5);
+        doc.setLineWidth(0.2);
+        y += 7;
+      };
+
+      // ── TAXPAYER INFO ────────────────────
+      secTitle('TAXPAYER INFORMATION');
+      rowPDF('Name', tpName);
+      rowPDF('Category', catText);
+      if(kids>0) rowPDF('Disabled Children / Wards', kids+' person(s)');
+      if(isNew)  rowPDF('New Taxpayer', 'Yes');
+      y += 4;
+
+      // ── MONTHLY SALARY ───────────────────
+      const MONTHS_EN = ['July','August','September','October','November','December','January','February','March','April','May','June'];
+      const KEYS_EN   = ['jul','aug','sep','oct','nov','dec','jan','feb','mar','apr','may','jun'];
+      const salaryData = [];
+      KEYS_EN.forEach((k,i)=>{
+        const v = parseFloat(document.getElementById('m-'+k).value)||0;
+        if(v>0) salaryData.push([MONTHS_EN[i], bdt2(v)]);
+      });
+      if(salaryData.length>0){
+        secTitle('MONTHLY SALARY (July – June)');
+        doc.autoTable({
+          body: salaryData, startY: y, margin:{left:M,right:M},
+          theme:'plain',
+          styles:{fontSize:9, textColor:[40,52,46], lineColor:[220,225,222], lineWidth:0.15},
+          columnStyles:{0:{cellWidth:90}, 1:{halign:'right',fontStyle:'bold'}},
+        });
+        y = doc.lastAutoTable.finalY + 5;
+      }
+
+      // ── BONUSES ──────────────────────────
+      const festival = parseFloat(document.getElementById('festival').value)||0;
+      const other    = parseFloat(document.getElementById('other').value)||0;
+      const tdsVal   = parseFloat(document.getElementById('tds').value)||0;
+      if(festival>0 || other>0){
+        secTitle('BONUS & ADDITIONAL INCOME');
+        if(festival>0) rowPDF('Festival Bonus', bdt2(festival));
+        if(other>0)    rowPDF('Other Bonus / Income', bdt2(other));
+        y += 4;
+      }
+
+      // ── INCOME & REBATE ───────────────────
+      secTitle('INCOME & INVESTMENT REBATE');
+      rowPDF('Annual Income', bdt2(r.annual));
+      rowPDF('Tax-Free Amount', bdt2(r.taxFree));
+      rowPDF('Taxable Income', bdt2(r.taxable));
+      if(r.investUseful){
+        rowPDF('Maximum Rebate', bdt2(r.appliedRebate));
+        rowPDF('Required Investment', bdt2(r.usefulInvest), true);
+      } else {
+        rowPDF('Required Investment', 'Not Applicable — Min. Tax Applies', true);
+      }
+      y += 4;
+
+      // ── EXISTING INVESTMENTS ──────────────────
+      if(r.existingInvestments && r.existingInvestments.length > 0){
+        if(y > 200) { doc.addPage(); y = 16; }
+        secTitle('EXISTING INVESTMENTS');
+        doc.autoTable({
+          head:[['Investment Type','Invested','Allowable']],
+          body: r.existingInvestments.map(x=>[
+            x.labelEn+(x.policyValue>0?' (Policy: '+bdt2(x.policyValue)+')':''),
+            bdt2(x.amount),
+            bdt2(x.allowable)+(x.capped?' *':'')
+          ]),
+          startY:y, margin:{left:M,right:M},
+          theme:'plain',
+          headStyles:{fontStyle:'bold',fontSize:8,textColor:[11,61,46],lineWidth:{bottom:0.4},lineColor:[11,61,46]},
+          bodyStyles:{fontSize:8.5,textColor:[40,52,46],lineColor:[220,225,222],lineWidth:0.15},
+          columnStyles:{0:{cellWidth:100},1:{halign:'right'},2:{halign:'right',fontStyle:'bold'}},
+          didDrawPage: function(data){ y = data.cursor.y; }
+        });
+        y = doc.lastAutoTable.finalY + 3;
+
+        if(r.existingInvestments.some(x=>x.capped)){
+          if(y > 265) { doc.addPage(); y = 16; }
+          doc.setFontSize(7.5); doc.setFont('helvetica','italic'); doc.setTextColor(180,100,0);
+          doc.text('* Amount capped at statutory allowable limit for this investment type.', M, y);
+          y += 5;
+        }
+        // DPS combined cap note
+        const dpsTotalAmt = r.existingInvestments.filter(x=>x.labelEn.includes('DPS')).reduce((s,x)=>s+x.amount,0);
+        if(dpsTotalAmt > 120000){
+          if(y > 265) { doc.addPage(); y = 16; }
+          doc.setFontSize(7.5); doc.setFont('helvetica','italic'); doc.setTextColor(180,100,0);
+          doc.text('Note: Combined DPS/Monthly Savings total BDT '+fmtN(dpsTotalAmt)+'. Combined cap of BDT 1,20,000 applied.', M, y);
+          y += 5;
+        }
+        if(y > 258) { doc.addPage(); y = 16; }
+        rowPDF('Total Allowable Investment', bdt2(r.totalAllowableInvest));
+        if(y > 258) { doc.addPage(); y = 16; }
+        rowPDF('Rebate from Existing Investments (x 15%)', bdt2(r.existRebate));
+        if(r.remainInvest > 0){
+          if(y > 258) { doc.addPage(); y = 16; }
+          rowPDF('Additional Investment Still Needed', bdt2(r.remainInvest), true);
+        } else {
+          if(y > 258) { doc.addPage(); y = 16; }
+          doc.setFontSize(9); doc.setFont('helvetica','bold'); doc.setTextColor(11,61,46);
+          doc.setFillColor(230,245,235); doc.rect(M, y-4, W-M*2, 8, 'F');
+          doc.text('Full rebate achieved. No further investment needed.', M+3, y+0.5);
+          y += 8;
+        }
+        y += 3;
+      }
+
+      // ── TAX SLAB ─────────────────────────
+      secTitle('TAX SLAB CALCULATION');
+      const engLabels = [
+        'Tax-Free (First BDT '+fmtN(r.exemptionLimit)+')',
+        'Next BDT 3,00,000',
+        'Next BDT 4,00,000',
+        'Next BDT 5,00,000',
+        'Next BDT 20,00,000',
+        'Remaining'
+      ];
+      doc.autoTable({
+        head:[['Income Band','Taxable Amount','Rate','Tax']],
+        body:(r.slabRows||[]).map((s,i)=>[
+          engLabels[i]||'Band', bdt2(s.inBand), (s.rate*100)+'%', bdt2(s.tax)
+        ]),
+        startY:y, margin:{left:M,right:M},
+        theme:'plain',
+        headStyles:{fontStyle:'bold',fontSize:8,textColor:[11,61,46],lineWidth:{bottom:0.4},lineColor:[11,61,46]},
+        bodyStyles:{fontSize:9,textColor:[40,52,46],lineColor:[220,225,222],lineWidth:0.15},
+        columnStyles:{1:{halign:'right'},2:{halign:'right',cellWidth:14},3:{halign:'right',fontStyle:'bold'}},
+      });
+      y = doc.lastAutoTable.finalY + 5;
+
+      // ── TAX SUMMARY ──────────────────────
+      secTitle('TAX SUMMARY');
+      rowPDF('Gross Tax (From Slabs)', bdt2(r.grossTax));
+      if(r.investUseful) rowPDF('Investment Rebate (15%)', '- '+bdt2(r.appliedRebate));
+      rowPDF('Net Tax Payable', bdt2(r.finalTax), true);
+      if(tdsVal>0) rowPDF('TDS Deducted at Source', '- '+bdt2(tdsVal));
+      y += 5;
+
+      // ── FINAL BOX (split: left = Tax To Pay, right = Monthly TDS) ─
+      if(y > 238) { doc.addPage(); y = 16; }
+      const finalLbl = r.isRefund ? 'TAX REFUND' : 'TAX TO PAY (IN RETURN)';
+      const boxW = W - M*2;
+      const boxH = 24;
+      const splitX = M + boxW * 0.56;
+
+      // Box outline
+      doc.setDrawColor(11,61,46); doc.setLineWidth(0.6);
+      doc.rect(M, y, boxW, boxH, 'S');
+      // Left accent bar
+      doc.setFillColor(11,61,46); doc.rect(M, y, 3, boxH, 'F');
+      // Vertical separator
+      doc.setDrawColor(200,215,205); doc.setLineWidth(0.4);
+      doc.line(splitX, y+3, splitX, y+boxH-3);
+      doc.setLineWidth(0.2);
+
+      // ── Left: Tax To Pay ──
+      doc.setFontSize(7); doc.setFont('helvetica','bold');
+      doc.setTextColor(91,110,100);
+      doc.text(finalLbl, M+6, y+8);
+      doc.setFontSize(15); doc.setFont('helvetica','bold');
+      doc.setTextColor(11,61,46);
+      doc.text(bdt2(Math.abs(r.balance||0)), M+6, y+18);
+      const msgTxt = getTaxMsg();
+      const msgLines = doc.splitTextToSize(msgTxt, splitX - M - 10);
+      doc.setFontSize(7); doc.setFont('helvetica','normal');
+      doc.setTextColor(91,110,100);
+      if(msgLines[0]) doc.text(msgLines[0], M+6, y+23);
+
+      // ── Right: Monthly TDS ──
+      const rx = splitX + 5;
+      doc.setFontSize(7); doc.setFont('helvetica','bold');
+      doc.setTextColor(91,110,100);
+      doc.text('MONTHLY TDS', rx, y+8);
+      doc.setFontSize(15); doc.setFont('helvetica','bold');
+      doc.setTextColor(11,61,46);
+      doc.text(bdt2(r.monthlyTDS||0), rx, y+18);
+      doc.setFontSize(7); doc.setFont('helvetica','normal');
+      doc.setTextColor(91,110,100);
+      doc.text('Deduct from salary each month', rx, y+23);
+
+      y += boxH + 8;
+
+      // ── INVESTMENT OPTIONS ────────────────
+      if(y > 215) { doc.addPage(); y = 16; }
+      secTitle('ALLOWABLE INVESTMENT OPTIONS (Tax Rebate @ 15%)');
+      doc.autoTable({
+        head:[['Investment / Donation Details','Allowable Limit']],
+        body:[
+          ['Life insurance premium paid by the individual','10% of policy value'],
+          ['Recognized provident fund (employer + employee contribution)','No limit'],
+          ['Superannuation fund contribution','No limit'],
+          ['Govt. securities: T-bill, Bond, Sanchayapatra, Debenture, Shariah securities','BDT 5,00,000'],
+          ['Unit certificates, Mutual funds, ETF or joint investment schemes','BDT 5,00,000'],
+          ['Deposit Pension Scheme (DPS) or Monthly Savings Scheme','BDT 1,20,000'],
+          ['BSEC regulated stock exchange listed securities','No limit'],
+          ['NBR approved charitable hospital (outside city corporation area)','No limit'],
+          ['Organizations established for welfare of disabled persons','No limit'],
+          ['Payment to Zakat Fund / Zakat Fund Management Act, 2023','No limit'],
+          ['NBR approved benevolent fund and group insurance schemes','No limit'],
+          ['Board approved institution for public development or education','No limit'],
+          ['Liberation War Museum donation','No limit'],
+        ],
+        startY:y, margin:{left:M,right:M},
+        theme:'plain',
+        headStyles:{fontStyle:'bold',fontSize:8,textColor:[11,61,46],lineWidth:{bottom:0.4},lineColor:[11,61,46]},
+        bodyStyles:{fontSize:8.5,textColor:[40,52,46],lineColor:[220,225,222],lineWidth:0.15},
+        columnStyles:{0:{cellWidth:130},1:{halign:'right',fontStyle:'bold',textColor:[11,61,46]}},
+      });
+      y = doc.lastAutoTable.finalY + 8;
+
+      // ── ADVISORY ─────────────────────────
+      if(y > 265) { doc.addPage(); y = 16; }
+      const advTxt = 'For accurate income tax return filing, please consult an experienced Income Tax Practitioner. Incorrect returns may result in penalties and legal complications.';
+      const advLines = doc.splitTextToSize(advTxt, W-M*2-8);
+      doc.setFillColor(11,61,46); doc.rect(M, y, 2.5, advLines.length*4.5+10, 'F');
+      doc.setFontSize(8.5); doc.setFont('helvetica','bold');
+      doc.setTextColor(11,61,46);
+      doc.text('For Accurate Tax Return — Contact Us', M+5, y+7);
+      doc.setFontSize(8); doc.setFont('helvetica','normal');
+      doc.setTextColor(80,95,85);
+      doc.text(advLines, M+5, y+13);
+      y += advLines.length*4.5+14;
+
+      // ── FOOTER ───────────────────────────
+      doc.setDrawColor(200,210,204); doc.setLineWidth(0.3);
+      doc.line(M, y, W-M, y); y += 5;
+
+      // Name + title row
+      doc.setFontSize(8.5); doc.setFont('helvetica','bold');
+      doc.setTextColor(11,61,46);
+      doc.text('Md. Nur Uddin Mahmud', M, y);
+      const nameW = doc.getTextWidth('Md. Nur Uddin Mahmud');
+      doc.setFont('helvetica','normal'); doc.setTextColor(107,122,113);
+      doc.text('   |   Income Tax Practitioner  ·  BBA & MBA, University of Chittagong', M + nameW, y);
+      // WhatsApp clickable link
+      doc.setFont('helvetica','bold'); doc.setTextColor(11,61,46);
+      const waNum2   = '01521222707';
+      const waLabel2 = 'WhatsApp: ';
+      const waNumW2  = doc.getTextWidth(waNum2);
+      const waLW2    = doc.getTextWidth(waLabel2);
+      const waX2     = W - M - waNumW2 - waLW2;
+      doc.text(waLabel2, waX2, y);
+      doc.setTextColor(0,102,68); doc.textWithLink(waNum2, waX2+waLW2, y, {url:'https://wa.me/8801521222707'});
+      doc.setDrawColor(0,102,68); doc.setLineWidth(0.25);
+      doc.line(waX2+waLW2, y+0.8, waX2+waLW2+waNumW2, y+0.8);
+      doc.setLineWidth(0.2);
+
+      doc.save('income-tax-'+tpName.replace(/\s+/g,'-')+'.pdf');
+
+    } catch(e) {
+      alert('PDF তৈরিতে সমস্যা: '+e.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> PDF ডাউনলোড করুন';
+    }
+  });
+
+  // ── Spin animation ──
+  const spinStyle = document.createElement('style');
+  spinStyle.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+  document.head.appendChild(spinStyle);
+
+  calculate();
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</body>
+</html>
