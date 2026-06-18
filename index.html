@@ -347,6 +347,15 @@
       <input type="checkbox" id="newTaxpayer">
       <label for="newTaxpayer">নতুন করদাতা <small>(নূন্যতম কর ৳১,০০০)</small></label>
     </div>
+    <div class="field" style="margin-top:14px">
+      <label for="filingPeriod">রিটার্ন দাখিলের সময়কাল <span style="font-weight:400;color:var(--muted)">(আয়কর আইন — ধারা ১৭০)</span></label>
+      <select id="filingPeriod">
+        <option value="q1">জুলাই – সেপ্টেম্বর &nbsp;|&nbsp; ইনসেন্টিভ প্রযোজ্য (৫% বা ৳২৫,০০০ যেটা কম)</option>
+        <option value="q2" selected>অক্টোবর – ডিসেম্বর &nbsp;|&nbsp; স্বাভাবিক — কোনো পরিবর্তন নেই</option>
+        <option value="q3">জানুয়ারি – মার্চ &nbsp;|&nbsp; বিলম্ব জরিমানা (২% বা ৳৩,০০০ যেটা বেশি)</option>
+        <option value="q4">এপ্রিল – জুন &nbsp;|&nbsp; বিলম্ব জরিমানা (৫% বা ৳৫,০০০ যেটা বেশি)</option>
+      </select>
+    </div>
   </div>
 
   <!-- Card: Existing investments -->
@@ -445,7 +454,7 @@
         <span class="value" id="v-exist-invest">৳ 0</span>
       </div>
       <div class="row">
-        <span class="name">বিদ্যমান বিনিয়োগ থেকে রিবেট (×১৫%)</span>
+        <span class="name">বিদ্যমান বিনিয়োগ থেকে রিবেট (×১০%)</span>
         <span class="value" id="v-exist-rebate">৳ 0</span>
       </div>
       <div class="row" id="remaining-row">
@@ -455,7 +464,6 @@
       <div style="padding:8px 0 4px;font-size:13px;color:var(--green);font-weight:700" id="v-invest-status"></div>
     </div>
 
-    <!-- ── Section 2: Tax slab ── -->
     <div class="result-block" style="margin-top:28px">
       <div class="block-title">স্ল্যাব ভিত্তিক আয়কর হিসাব</div>
     </div>
@@ -490,8 +498,22 @@
       <span class="name">কর্তনকৃত TDS (Deducted at Source)</span>
       <span class="value deduct" id="v-tds-row">− ৳ 0</span>
     </div>
+
+    <!-- ── Section 170: Filing Period Adjustment ── -->
+    <div id="s170Wrap" style="display:none;margin-top:10px">
+      <div class="row" style="border-top:1.5px dashed var(--line);padding-top:12px;margin-top:4px">
+        <span class="name" id="s170Label">ধারা ১৭০ সমন্বয়</span>
+        <span class="value" id="v-s170">৳ 0</span>
+      </div>
+      <div style="margin-top:10px;border:1.5px solid var(--line);border-radius:10px;padding:18px 20px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px" id="s170BoxLabel">সমন্বিত পরিশোধযোগ্য কর</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(22px,5vw,30px);font-weight:600;margin:2px 0 6px" id="v-adjusted">৳ 0</div>
+        <div style="font-size:13px;color:var(--muted)" id="s170Msg"></div>
+      </div>
+    </div>
+
     <div class="final-box navy">
-      <div class="flabel" id="finalTaxLabel">রিটার্নে পরিশোধযোগ্য কর · Tax to Pay</div>
+      <div class="flabel" id="finalTaxLabel">রিটার্ন দাখিলের সময় কর দিতে হবে · Tax Due at Return Filing</div>
       <div class="famount" id="v-nettax">৳ 0</div>
       <div class="fmsg" id="taxMsg">আয়ের তথ্য দিলে প্রদেয় কর এখানে দেখাবে।</div>
     </div>
@@ -693,8 +715,10 @@
     const annual   = salaryTotal + festival + other;
     const taxFree  = Math.min(annual/3, 500000);
     const taxable  = annual - taxFree;
-    const maxRebate= Math.round(taxable * 0.03);
-    const reqInvest= Math.round(maxRebate / 0.15);
+    // অর্থ আইন ২০২৬: Maximum Rebate = MIN(করযোগ্য আয়ের ৩%, বিদ্যমান বিনিয়োগের ১০%, ৭৫০,০০০)
+    // Required Investment = Maximum Rebate ÷ ১০%
+    const maxRebate= Math.min(Math.round(taxable * 0.03), 750000);
+    const reqInvest= Math.round(maxRebate / 0.10);
 
     document.getElementById('v-annual').textContent  = bdt(annual);
     document.getElementById('v-taxfree').textContent = bdt(taxFree);
@@ -729,7 +753,7 @@
       if(minApplied){
         // Can only reduce down to 5000
         appliedRebate = grossTax - 5000;
-        usefulInvest  = Math.round(appliedRebate / 0.15);
+        usefulInvest  = Math.round(appliedRebate / 0.10);
       } else {
         appliedRebate = maxRebate;
         usefulInvest  = reqInvest;
@@ -778,7 +802,7 @@
 
     labelEl.textContent  = isRefund
       ? 'ফেরতযোগ্য কর (Tax Refund)'
-      : 'রিটার্নে পরিশোধযোগ্য কর · Tax to Pay';
+      : 'রিটার্ন দাখিলের সময় কর দিতে হবে · Tax Due at Return Filing';
     amountEl.textContent = bdt(Math.abs(balance));
     amountEl.style.color = isRefund ? '#7ee8a2' : '#f7d489';
 
@@ -811,7 +835,7 @@
     const { total: tdsGross } = slabTax(tdsTaxable, exemptionLimit);
     let tdsFinal = 0;
     if(tdsGross > 5000){
-      tdsFinal = Math.max(tdsGross - Math.round(tdsTaxable * 0.03), 5000);
+      tdsFinal = Math.max(tdsGross - Math.min(Math.round(tdsTaxable * 0.03), 750000), 5000);
     } else if(tdsGross > 0){
       tdsFinal = 5000;
     } else if(isNew){
@@ -821,9 +845,9 @@
 
     // Existing investment analysis
     const totalAllowableInvest = computeEffectiveAllowable(existingInvestments);
-    const existRebate   = Math.min(Math.round(totalAllowableInvest * 0.15), appliedRebate);
+    const existRebate   = Math.min(Math.round(totalAllowableInvest * 0.10), maxRebate);
     const remainInvest  = (investUseful && totalAllowableInvest > 0)
-      ? Math.max(Math.round((appliedRebate - existRebate) / 0.15), 0) : 0;
+      ? Math.max(Math.round((maxRebate - existRebate) / 0.10), 0) : 0;
 
     if(investUseful && totalAllowableInvest > 0){
       document.getElementById('investAnalysis').style.display = 'block';
@@ -858,6 +882,59 @@
     }
 
     // Store results for PDF generation
+    // Section 170 — Filing period incentive / penalty
+    const filingPeriod  = document.getElementById('filingPeriod').value;
+    const payableBase   = Math.max(0, grossTax - tds); // ধারা ১৭০: গ্রস ট্যাক্স − কর্তনকৃত টিডিএস
+    let s170Amount = 0, s170Type = 'none';
+
+    if (!minApplied && !isRefund && payableBase > 0) {
+      if (filingPeriod === 'q1') {
+        s170Amount = Math.min(Math.round(payableBase * 0.05), 25000);
+        s170Type   = 'incentive';
+      } else if (filingPeriod === 'q3') {
+        s170Amount = Math.max(Math.round(payableBase * 0.02), 3000);
+        s170Type   = 'penalty';
+      } else if (filingPeriod === 'q4') {
+        s170Amount = Math.max(Math.round(payableBase * 0.05), 5000);
+        s170Type   = 'penalty';
+      }
+    }
+    const adjustedBalance = s170Type === 'incentive'
+      ? Math.max(0, payableBase - s170Amount)
+      : payableBase + s170Amount;
+
+    // Update Section 170 UI
+    const s170Wrap = document.getElementById('s170Wrap');
+    if (s170Type === 'none') {
+      s170Wrap.style.display = 'none';
+    } else {
+      s170Wrap.style.display = 'block';
+      const periodNames = { q1:'জুলাই–সেপ্টেম্বর', q3:'জানুয়ারি–মার্চ', q4:'এপ্রিল–জুন' };
+      const pName = periodNames[filingPeriod];
+      const s170LabelEl    = document.getElementById('s170Label');
+      const s170ValEl      = document.getElementById('v-s170');
+      const s170BoxLabelEl = document.getElementById('s170BoxLabel');
+      const s170AdjEl      = document.getElementById('v-adjusted');
+      const s170MsgEl      = document.getElementById('s170Msg');
+
+      if (s170Type === 'incentive') {
+        s170LabelEl.textContent    = 'ইনসেন্টিভ বোনাস — ধারা ১৭০ ('+pName+')';
+        s170ValEl.textContent      = '− '+bdt(s170Amount);
+        s170ValEl.style.color      = 'var(--green)';
+        s170BoxLabelEl.textContent = 'সমন্বিত পরিশোধযোগ্য কর (ইনসেন্টিভ বাদে)';
+        s170AdjEl.style.color      = 'var(--green)';
+        s170MsgEl.textContent      = bdt(payableBase)+' প্রদেয় করের '+s170Amount.toLocaleString('en-IN')+' টাকা ইনসেন্টিভ বাদে সর্বোচ্চ করণীয়।';
+      } else {
+        s170LabelEl.textContent    = 'বিলম্ব জরিমানা — ধারা ১৭০ ('+pName+')';
+        s170ValEl.textContent      = '+ '+bdt(s170Amount);
+        s170ValEl.style.color      = 'var(--error)';
+        s170BoxLabelEl.textContent = 'সমন্বিত পরিশোধযোগ্য কর (জরিমানা সহ)';
+        s170AdjEl.style.color      = 'var(--error)';
+        s170MsgEl.textContent      = bdt(payableBase)+' প্রদেয় করের উপর '+bdt(s170Amount)+' বিলম্ব জরিমানা যোগে মোট পরিশোধযোগ্য।';
+      }
+      s170AdjEl.textContent = bdt(adjustedBalance);
+    }
+
     window.pdfData = {
       annual, taxFree, taxable, maxRebate, reqInvest,
       appliedRebate, usefulInvest, investUseful,
@@ -868,7 +945,8 @@
         amount:x.amount, policyValue:x.policyValue,
         allowable:x.allowable, capped:x.amount>x.allowable
       })),
-      totalAllowableInvest, existRebate, remainInvest
+      totalAllowableInvest, existRebate, remainInvest,
+      s170Type, s170Amount, adjustedBalance, filingPeriod
     };
   }
 
@@ -1004,6 +1082,7 @@
   document.getElementById('category').addEventListener('change',calculate);
   document.getElementById('disabledKids').addEventListener('input',calculate);
   document.getElementById('newTaxpayer').addEventListener('change',calculate);
+  document.getElementById('filingPeriod').addEventListener('change',calculate);
 
   document.getElementById('resetBtn').addEventListener('click',()=>{
     if(!confirm('সব তথ্য মুছে দিতে চান?\nএই কাজটি পূর্বাবস্থায় ফেরানো যাবে না।')) return;
@@ -1012,6 +1091,8 @@
     document.getElementById('disabledKids').value='';
     document.getElementById('taxpayerName').value='';
     document.getElementById('newTaxpayer').checked=false;
+    document.getElementById('filingPeriod').value='q2';
+    document.getElementById('s170Wrap').style.display='none';
     document.getElementById('category').value='375000';
     document.getElementById('v-nettax').style.color='#f7d489';
     existingInvestments=[];
@@ -1221,7 +1302,7 @@
         if(y > 258) { doc.addPage(); y = 16; }
         rowPDF('Total Allowable Investment', bdt2(r.totalAllowableInvest));
         if(y > 258) { doc.addPage(); y = 16; }
-        rowPDF('Rebate from Existing Investments (x 15%)', bdt2(r.existRebate));
+        rowPDF('Rebate from Existing Investments (x 10%)', bdt2(r.existRebate));
         if(r.remainInvest > 0){
           if(y > 258) { doc.addPage(); y = 16; }
           rowPDF('Additional Investment Still Needed', bdt2(r.remainInvest), true);
@@ -1261,16 +1342,16 @@
       // ── TAX SUMMARY ──────────────────────
       secTitle('TAX SUMMARY');
       rowPDF('Gross Tax (From Slabs)', bdt2(r.grossTax));
-      if(r.investUseful) rowPDF('Investment Rebate (15%)', '- '+bdt2(r.appliedRebate));
+      if(r.investUseful) rowPDF('Investment Rebate (10%)', '- '+bdt2(r.appliedRebate));
       rowPDF('Net Tax Payable', bdt2(r.finalTax), true);
       if(tdsVal>0) rowPDF('TDS Deducted at Source', '- '+bdt2(tdsVal));
       y += 5;
 
       // ── FINAL BOX (split: left = Tax To Pay, right = Monthly TDS) ─
       if(y > 238) { doc.addPage(); y = 16; }
-      const finalLbl = r.isRefund ? 'TAX REFUND' : 'TAX TO PAY (IN RETURN)';
+      const finalLbl = r.isRefund ? 'TAX REFUND' : 'TAX DUE AT RETURN FILING';
       const boxW = W - M*2;
-      const boxH = 24;
+      const boxH = 30;
       const splitX = M + boxW * 0.56;
 
       // Box outline
@@ -1283,18 +1364,19 @@
       doc.line(splitX, y+3, splitX, y+boxH-3);
       doc.setLineWidth(0.2);
 
-      // ── Left: Tax To Pay ──
+      // ── Left: Tax Due at Return Filing ──
       doc.setFontSize(7); doc.setFont('helvetica','bold');
       doc.setTextColor(91,110,100);
       doc.text(finalLbl, M+6, y+8);
       doc.setFontSize(15); doc.setFont('helvetica','bold');
       doc.setTextColor(11,61,46);
-      doc.text(bdt2(Math.abs(r.balance||0)), M+6, y+18);
+      doc.text(bdt2(Math.abs(r.balance||0)), M+6, y+19);
       const msgTxt = getTaxMsg();
       const msgLines = doc.splitTextToSize(msgTxt, splitX - M - 10);
-      doc.setFontSize(7); doc.setFont('helvetica','normal');
+      doc.setFontSize(6.5); doc.setFont('helvetica','normal');
       doc.setTextColor(91,110,100);
-      if(msgLines[0]) doc.text(msgLines[0], M+6, y+23);
+      if(msgLines[0]) doc.text(msgLines[0], M+6, y+24.5);
+      if(msgLines[1]) doc.text(msgLines[1], M+6, y+28.5);
 
       // ── Right: Monthly TDS ──
       const rx = splitX + 5;
@@ -1303,16 +1385,76 @@
       doc.text('MONTHLY TDS', rx, y+8);
       doc.setFontSize(15); doc.setFont('helvetica','bold');
       doc.setTextColor(11,61,46);
-      doc.text(bdt2(r.monthlyTDS||0), rx, y+18);
-      doc.setFontSize(7); doc.setFont('helvetica','normal');
+      doc.text(bdt2(r.monthlyTDS||0), rx, y+19);
+      doc.setFontSize(6.5); doc.setFont('helvetica','normal');
       doc.setTextColor(91,110,100);
-      doc.text('Deduct from salary each month', rx, y+23);
+      doc.text('Deduct from salary each month', rx, y+24.5);
 
       y += boxH + 8;
 
+      // ── SECTION 170 ──────────────────────────
+      if(r.s170Type && r.s170Type !== 'none'){
+        if(y > 252) { doc.addPage(); y = 16; }
+        const periodLabels = {
+          q1: 'July – September (Incentive Period)',
+          q3: 'January – March (Late Filing)',
+          q4: 'April – June (Late Filing)'
+        };
+        const s170PeriodLabel = periodLabels[r.filingPeriod] || '';
+        const isIncentive = r.s170Type === 'incentive';
+
+        // Section header
+        doc.setFontSize(7.5); doc.setFont('helvetica','bold');
+        doc.setTextColor(isIncentive ? 11 : 179, isIncentive ? 61 : 50, isIncentive ? 46 : 46);
+        doc.text('SECTION 170 ADJUSTMENT — '+s170PeriodLabel, M, y); y += 5;
+        doc.setDrawColor(isIncentive ? 11 : 179, isIncentive ? 61 : 50, isIncentive ? 46 : 46);
+        doc.setLineWidth(0.4);
+        doc.line(M, y, W-M, y); doc.setLineWidth(0.2); y += 5;
+
+        rowPDF('Tax Payable in Return (Base for Section 170)', bdt2(Math.abs(r.balance||0)));
+        if(isIncentive){
+          doc.setFontSize(9.5); doc.setFont('helvetica','normal');
+          doc.setTextColor(11,61,46);
+          doc.text('Incentive Bonus (Early Filing)', M+1, y);
+          doc.setFont('helvetica','bold');
+          doc.text('- '+bdt2(r.s170Amount), W-M-1, y, {align:'right'});
+          doc.setDrawColor(220,225,222); doc.setLineWidth(0.15);
+          doc.line(M, y+1.5, W-M, y+1.5); doc.setLineWidth(0.2);
+          y += 7;
+        } else {
+          doc.setFontSize(9.5); doc.setFont('helvetica','normal');
+          doc.setTextColor(179,50,46);
+          doc.text('Late Filing Penalty', M+1, y);
+          doc.setFont('helvetica','bold');
+          doc.text('+ '+bdt2(r.s170Amount), W-M-1, y, {align:'right'});
+          doc.setDrawColor(220,225,222); doc.setLineWidth(0.15);
+          doc.line(M, y+1.5, W-M, y+1.5); doc.setLineWidth(0.2);
+          doc.setTextColor(28,36,32); y += 7;
+        }
+
+        // Adjusted final box
+        const adjBoxH = 18;
+        const adjColor = isIncentive ? [11,61,46] : [155,20,20];
+        doc.setFillColor(...adjColor);
+        doc.roundedRect(M, y, W-M*2, adjBoxH, 2, 2, 'F');
+        doc.setFillColor(...adjColor); doc.rect(M, y, 3, adjBoxH, 'F');
+        doc.setFontSize(7); doc.setFont('helvetica','bold');
+        doc.setTextColor(isIncentive ? 169 : 255, isIncentive ? 199 : 180, isIncentive ? 180 : 180);
+        doc.text(isIncentive ? 'ADJUSTED TAX DUE AT RETURN FILING (AFTER INCENTIVE)' : 'ADJUSTED TAX DUE AT RETURN FILING (INCLUDING PENALTY)', M+6, y+7);
+        doc.setFontSize(15); doc.setTextColor(255,255,255);
+        doc.text(bdt2(r.adjustedBalance), M+6, y+15);
+        doc.setFontSize(7.5); doc.setFont('helvetica','normal');
+        doc.setTextColor(isIncentive ? 212 : 255, isIncentive ? 228 : 200, isIncentive ? 218 : 200);
+        const adjMsg = isIncentive
+          ? 'Early submission incentive of '+bdt2(r.s170Amount)+' applied.'
+          : 'Late filing penalty of '+bdt2(r.s170Amount)+' added.';
+        doc.text(adjMsg, W-M-3, y+9, {align:'right'});
+        y += adjBoxH + 8;
+      }
+
       // ── INVESTMENT OPTIONS ────────────────
       if(y > 215) { doc.addPage(); y = 16; }
-      secTitle('ALLOWABLE INVESTMENT OPTIONS (Tax Rebate @ 15%)');
+      secTitle('ALLOWABLE INVESTMENT OPTIONS (Tax Rebate @ 10%)');
       doc.autoTable({
         head:[['Investment / Donation Details','Allowable Limit']],
         body:[
@@ -1393,7 +1535,151 @@
   calculate();
 })();
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- ═══════════════════════════════════════════════
+       EMAIL GATE MODAL
+       ═══════════════════════════════════════════════ -->
+  <div id="emailGate" style="
+    position:fixed;inset:0;z-index:9999;
+    background:rgba(10,24,18,0.93);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+    transition:opacity .3s ease;
+  ">
+    <div style="
+      background:#fff;border-radius:16px;
+      padding:36px 32px 28px;
+      max-width:400px;width:100%;
+      box-shadow:0 30px 80px rgba(0,0,0,.4);
+    ">
+      <!-- Logo -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
+        <div style="
+          width:40px;height:40px;border-radius:10px;
+          background:#0b3d2e;display:flex;align-items:center;justify-content:center;
+        ">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 18v-7"/><path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z"/>
+            <path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M3 22h18"/><path d="M6 18v-7"/>
+          </svg>
+        </div>
+        <span style="font-family:'Hind Siliguri',sans-serif;font-size:15px;font-weight:700;color:#0b3d2e">IncoTax Solutions</span>
+      </div>
+
+      <!-- Heading -->
+      <h2 style="font-family:'Hind Siliguri',sans-serif;font-size:20px;font-weight:700;color:#0b2e1e;margin:0 0 6px">
+        আয়কর ক্যালকুলেটর
+      </h2>
+      <p style="font-family:'Hind Siliguri',sans-serif;font-size:13.5px;color:#64748b;margin:0 0 22px;line-height:1.55">
+        বিনামূল্যে ব্যবহার করুন। শুধু আপনার ইমেইল ঠিকানাটি দিন।
+      </p>
+
+      <!-- Email input -->
+      <label style="font-family:'Hind Siliguri',sans-serif;font-size:12.5px;font-weight:600;color:#334155;display:block;margin-bottom:6px">
+        ইমেইল ঠিকানা
+      </label>
+      <input
+        type="email"
+        id="gateEmail"
+        placeholder="example@gmail.com"
+        autocomplete="email"
+        style="
+          width:100%;box-sizing:border-box;
+          border:1.5px solid #cbd5e1;border-radius:9px;
+          padding:11px 14px;font-size:14px;color:#0f172a;
+          font-family:'Hind Siliguri',sans-serif;
+          outline:none;transition:border-color .15s;
+          margin-bottom:6px;
+        "
+        onfocus="this.style.borderColor='#0b3d2e'"
+        onblur="this.style.borderColor='#cbd5e1'"
+      >
+      <div id="gateError" style="display:none;font-size:12px;color:#dc2626;margin-bottom:8px;font-family:'Hind Siliguri',sans-serif">
+        সঠিক ইমেইল ঠিকানা দিন।
+      </div>
+
+      <!-- Submit button -->
+      <button id="gateSubmit" style="
+        width:100%;padding:12px;margin-top:6px;
+        background:#0b3d2e;color:#fff;
+        border:none;border-radius:9px;
+        font-family:'Hind Siliguri',sans-serif;
+        font-size:14.5px;font-weight:700;
+        cursor:pointer;transition:background .15s;
+        display:flex;align-items:center;justify-content:center;gap:8px;
+      "
+        onmouseover="this.style.background='#0d4e3a'"
+        onmouseout="this.style.background='#0b3d2e'"
+      >
+        ক্যালকুলেটর ব্যবহার করুন
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+        </svg>
+      </button>
+
+      <!-- Privacy note -->
+      <p style="font-family:'Hind Siliguri',sans-serif;font-size:11px;color:#94a3b8;margin:14px 0 0;text-align:center;line-height:1.5">
+        আপনার ইমেইল সুরক্ষিত থাকবে। Spam পাঠানো হবে না।
+      </p>
+    </div>
+  </div>
+
+  <script>
+  // ── Email Gate ────────────────────────────────────────
+  (function(){
+    // ★ এখানে আপনার Google Apps Script URL বসান ★
+    const APPS_SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+
+    const gate    = document.getElementById('emailGate');
+    const btn     = document.getElementById('gateSubmit');
+    const input   = document.getElementById('gateEmail');
+    const errEl   = document.getElementById('gateError');
+
+    function unlockGate(){
+      gate.style.opacity = '0';
+      setTimeout(()=>{ gate.style.display='none'; }, 300);
+    }
+
+    // যদি আগে লগইন করা থাকে, সরাসরি ঢুকতে দাও
+    if(localStorage.getItem('incotax_gate_passed')){
+      unlockGate();
+      return;
+    }
+
+    btn.addEventListener('click', async ()=>{
+      const email = input.value.trim();
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if(!valid){
+        errEl.style.display = 'block';
+        input.style.borderColor = '#dc2626';
+        return;
+      }
+      errEl.style.display = 'none';
+
+      // Loading state
+      btn.disabled = true;
+      btn.innerHTML = '<svg width="16" height="16" style="animation:spin 1s linear infinite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> সাবমিট হচ্ছে...';
+
+      // Google Sheets-এ পাঠাও (fire-and-forget)
+      try {
+        fetch(APPS_SCRIPT_URL, {
+          method : 'POST',
+          mode   : 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body   : JSON.stringify({
+            email    : email,
+            timestamp: new Date().toISOString(),
+            source   : window.location.href
+          })
+        });
+      } catch(e){ /* নেটওয়ার্ক সমস্যা হলেও ঢুকতে দাও */ }
+
+      localStorage.setItem('incotax_gate_passed', email);
+      unlockGate();
+    });
+
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter') btn.click(); });
+  })();
+  </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </body>
 </html>
