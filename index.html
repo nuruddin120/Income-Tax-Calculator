@@ -1534,29 +1534,28 @@
       doc.line(waX2+waLW2, y+0.8, waX2+waLW2+waNumW2, y+0.8);
       doc.setLineWidth(0.2);
 
-      // ★ এখানে আপনার Google Apps Script URL বসান ★
-      const APPS_SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+      // ★ Vercel Function — same domain, no CORS issues ★
       const filename = 'income-tax-'+tpName.replace(/\s+/g,'-')+'.pdf';
-
-      // Base64 for email attachment
       const pdfBase64 = doc.output('datauristring').split(',')[1];
 
-      // Send to Apps Script: saves email to Sheets + sends PDF by email
-      try {
-        fetch(APPS_SCRIPT_URL, {
-          method : 'POST',
-          mode   : 'no-cors',
-          body   : JSON.stringify({
-            email     : emailVal,
-            pdfBase64 : pdfBase64,
-            filename  : filename,
-            timestamp : new Date().toISOString(),
-            source    : window.location.href
-          })
-        });
-      } catch(fetchErr) { /* নেটওয়ার্ক সমস্যা হলেও এগিয়ে যাও */ }
+      const response = await fetch('/api/send-pdf', {
+        method : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body   : JSON.stringify({
+          email    : emailVal,
+          pdfBase64: pdfBase64,
+          filename : filename,
+          timestamp: new Date().toISOString(),
+          source   : window.location.href
+        })
+      });
 
-      // Show success in modal
+      if (!response.ok) {
+        const err = await response.json().catch(()=>({}));
+        throw new Error(err.error || 'Server error '+response.status);
+      }
+
+      // Success
       submitBtn.innerHTML = '✓ পাঠানো হয়েছে!';
       submitBtn.style.background = '#166534';
       document.getElementById('pdfEmailStatus').style.display = 'block';
@@ -1567,7 +1566,7 @@
         submitBtn.disabled = false; cancelBtn.disabled = false;
         document.getElementById('pdfEmailInput').value = '';
         document.getElementById('pdfEmailStatus').style.display = 'none';
-      }, 3000);
+      }, 3500);
 
     } catch(e) {
       alert('PDF তৈরিতে সমস্যা: '+e.message);
