@@ -795,8 +795,8 @@
     document.getElementById('v-tds-row').textContent    = '− '+bdt(tds);
 
     // Balance after TDS
-    const balance = finalTax - tds;
-    const isRefund = balance < 0;
+    let balance = finalTax - tds;
+    let isRefund = balance < 0;
     const labelEl  = document.getElementById('finalTaxLabel');
     const amountEl = document.getElementById('v-nettax');
 
@@ -853,6 +853,23 @@
     // বিদ্যমান বিনিয়োগ থাকলে → existRebate (actual); না থাকলে → appliedRebate (potential max)
     if(investUseful && totalAllowableInvest > 0){
       document.getElementById('v-rebate2').textContent = '− '+bdt(existRebate);
+      // Recalculate finalTax based on actual existRebate
+      finalTax = Math.max(grossTax - existRebate, 5000);
+      document.getElementById('v-nettax-row').textContent = bdt(finalTax);
+      document.getElementById('v-tds-row').textContent    = '− '+bdt(tds);
+      // Recalculate balance
+      const newBalance = finalTax - tds;
+      const newIsRefund = newBalance < 0;
+      const labelEl2  = document.getElementById('finalTaxLabel');
+      const amountEl2 = document.getElementById('v-nettax');
+      labelEl2.textContent  = newIsRefund
+        ? 'ফেরতযোগ্য কর (Tax Refund)'
+        : 'রিটার্ন দাখিলের সময় কর দিতে হবে · Tax Due at Return Filing';
+      amountEl2.textContent = bdt(Math.abs(newBalance));
+      amountEl2.style.color = newIsRefund ? '#7ee8a2' : '#f7d489';
+      // Update balance/isRefund for pdfData
+      balance = newBalance;
+      isRefund = newIsRefund;
     }
 
     if(investUseful && totalAllowableInvest > 0){
