@@ -884,6 +884,14 @@
       // Update balance/isRefund for pdfData
       balance = newBalance;
       isRefund = newIsRefund;
+      // Update taxMsg to reflect actual existRebate
+      if(newIsRefund){
+        document.getElementById('taxMsg').innerHTML =
+          'TDS <strong>'+bdt(tds)+'</strong> প্রদেয় কর <strong>'+bdt(finalTax)+'</strong> এর বেশি। ফেরত পাবেন <strong>'+bdt(Math.abs(newBalance))+'</strong>।';
+      } else {
+        document.getElementById('taxMsg').innerHTML =
+          'মোট কর <strong>'+bdt(grossTax)+'</strong> থেকে বিনিয়োগ রিবেট <strong>'+bdt(existRebate)+'</strong> ও TDS বাদে <strong>'+bdt(newBalance)+'</strong> পরিশোধ করতে হবে।';
+      }
     }
 
     if(investUseful && totalAllowableInvest > 0){
