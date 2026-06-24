@@ -516,6 +516,9 @@
       <div class="flabel" id="finalTaxLabel">রিটার্ন দাখিলের সময় কর দিতে হবে · Tax Due at Return Filing</div>
       <div class="famount" id="v-nettax">৳ 0</div>
       <div class="fmsg" id="taxMsg">আয়ের তথ্য দিলে প্রদেয় কর এখানে দেখাবে।</div>
+      <div id="investWarning" style="display:none;margin-top:10px;padding:10px 12px;background:rgba(251,191,36,0.15);border-left:3px solid #f59e0b;border-radius:0 6px 6px 0;font-size:12.5px;line-height:1.55;color:#92400e;font-family:'Hind Siliguri',sans-serif">
+        ⚠ উপরের হিসাবে সর্বোচ্চ বিনিয়োগ রিবেট <strong id="warnRebateAmt">৳ 0</strong> বিবেচনায় নেওয়া হয়েছে। প্রকৃতপক্ষে বিনিয়োগ না করলে রিবেট পাওয়া যাবে না এবং অতিরিক্ত <strong id="warnExtraAmt">৳ 0</strong> কর দিতে হবে।
+      </div>
     </div>
   </section>
 
@@ -905,6 +908,16 @@
     }
 
     // Store results for PDF generation
+    // Investment warning: no existing investments but rebate assumed
+    const warnEl = document.getElementById('investWarning');
+    if(investUseful && totalAllowableInvest === 0 && appliedRebate > 0){
+      warnEl.style.display = 'block';
+      document.getElementById('warnRebateAmt').textContent = bdt(appliedRebate);
+      document.getElementById('warnExtraAmt').textContent  = bdt(appliedRebate);
+    } else {
+      warnEl.style.display = 'none';
+    }
+
     // Section 170 — Filing period incentive / penalty
     const filingPeriod  = document.getElementById('filingPeriod').value;
     const payableBase   = Math.max(0, grossTax - tds); // ধারা ১৭০: গ্রস ট্যাক্স − কর্তনকৃত টিডিএস
@@ -1116,6 +1129,7 @@
     document.getElementById('newTaxpayer').checked=false;
     document.getElementById('filingPeriod').value='q2';
     document.getElementById('s170Wrap').style.display='none';
+    document.getElementById('investWarning').style.display='none';
     document.getElementById('category').value='375000';
     document.getElementById('v-nettax').style.color='#f7d489';
     existingInvestments=[];
