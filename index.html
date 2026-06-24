@@ -1105,34 +1105,17 @@
   });
 
   document.getElementById('printBtn').addEventListener('click', () => {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      alert('PDF লাইব্রেরি লোড হয়নি। পেজ রিফ্রেশ করুন।'); return;
+    }
     const r = window.pdfData;
     if (!r || !r.annual) {
       alert('আগে আয়ের তথ্য দিন, তারপর PDF ডাউনলোড করুন।'); return;
     }
-    const modal = document.getElementById('pdfEmailModal');
-    modal.style.display = 'flex';
-    setTimeout(()=>{ document.getElementById('pdfEmailInput').focus(); }, 80);
-  });
 
-  // ── PDF Email Submit handler ──────────────────────────
-  document.addEventListener('click', async (e) => {
-    if (!e.target.closest('#pdfEmailSubmit')) return;
-    const emailVal = document.getElementById('pdfEmailInput').value.trim();
-    const errEl    = document.getElementById('pdfEmailError');
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
-      errEl.style.display = 'block'; return;
-    }
-    errEl.style.display = 'none';
-
-    if (!window.jspdf || !window.jspdf.jsPDF) {
-      alert('PDF লাইব্রেরি লোড হয়নি। পেজ রিফ্রেশ করুন।'); return;
-    }
-
-    const r = window.pdfData;
-    const submitBtn = document.getElementById('pdfEmailSubmit');
-    const cancelBtn = document.getElementById('pdfEmailCancel');
-    submitBtn.disabled = true; cancelBtn.disabled = true;
-    submitBtn.innerHTML = '<svg style="width:16px;height:16px;animation:spin 1s linear infinite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> পাঠানো হচ্ছে...';
+    const btn = document.getElementById('printBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<svg style="width:18px;height:18px;animation:spin 1s linear infinite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> তৈরি হচ্ছে...';
 
     try {
       const { jsPDF } = window.jspdf;
@@ -1534,52 +1517,15 @@
       doc.line(waX2+waLW2, y+0.8, waX2+waLW2+waNumW2, y+0.8);
       doc.setLineWidth(0.2);
 
-      // ★ Vercel Function — same domain, no CORS issues ★
       const filename = 'income-tax-'+tpName.replace(/\s+/g,'-')+'.pdf';
-      const pdfBase64 = doc.output('datauristring').split(',')[1];
-
-      const response = await fetch('/api/send-pdf', {
-        method : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body   : JSON.stringify({
-          email    : emailVal,
-          pdfBase64: pdfBase64,
-          filename : filename,
-          timestamp: new Date().toISOString(),
-          source   : window.location.href
-        })
-      });
-
-      if (!response.ok) {
-        const err = await response.json().catch(()=>({}));
-        throw new Error(err.error || 'Server error '+response.status);
-      }
-
-      // Success
-      submitBtn.innerHTML = '✓ পাঠানো হয়েছে!';
-      submitBtn.style.background = '#166534';
-      document.getElementById('pdfEmailStatus').style.display = 'block';
-      setTimeout(()=>{
-        document.getElementById('pdfEmailModal').style.display = 'none';
-        submitBtn.innerHTML = 'পিডিএফ পাঠান →';
-        submitBtn.style.background = '#0b3d2e';
-        submitBtn.disabled = false; cancelBtn.disabled = false;
-        document.getElementById('pdfEmailInput').value = '';
-        document.getElementById('pdfEmailStatus').style.display = 'none';
-      }, 3500);
+      doc.save(filename);
 
     } catch(e) {
       alert('PDF তৈরিতে সমস্যা: '+e.message);
-      submitBtn.disabled = false; cancelBtn.disabled = false;
-      submitBtn.innerHTML = 'পিডিএফ পাঠান →';
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> বিস্তারিত ব্যাখ্যাসহ পিডিএফ';
     }
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('#pdfEmailCancel')) return;
-    document.getElementById('pdfEmailModal').style.display = 'none';
-    document.getElementById('pdfEmailInput').value = '';
-    document.getElementById('pdfEmailError').style.display = 'none';
   });
 
   // ── Spin animation ──
@@ -1590,79 +1536,6 @@
   calculate();
 })();
 </script>
-  <!-- ═══════════════════════════════════════════════
-       PDF EMAIL MODAL
-       ═══════════════════════════════════════════════ -->
-  <div id="pdfEmailModal" style="
-    position:fixed;inset:0;z-index:9999;
-    background:rgba(10,24,18,0.93);
-    display:none;align-items:center;justify-content:center;
-    padding:20px;
-  ">
-    <div style="
-      background:#fff;border-radius:16px;
-      padding:32px 28px 26px;
-      max-width:380px;width:100%;
-      box-shadow:0 30px 80px rgba(0,0,0,.4);
-    ">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
-        <div style="width:38px;height:38px;border-radius:9px;background:#0b3d2e;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-        </div>
-        <span style="font-family:'Hind Siliguri',sans-serif;font-size:15px;font-weight:700;color:#0b3d2e">বিস্তারিত ব্যাখ্যাসহ পিডিএফ</span>
-      </div>
-
-      <p style="font-family:'Hind Siliguri',sans-serif;font-size:13.5px;color:#475569;margin:0 0 18px;line-height:1.55">
-        আপনার ইমেইল ঠিকানায় বিস্তারিত আয়কর রিপোর্ট পিডিএফ হিসেবে পাঠানো হবে।
-      </p>
-
-      <label style="font-family:'Hind Siliguri',sans-serif;font-size:12.5px;font-weight:600;color:#334155;display:block;margin-bottom:6px">
-        ইমেইল ঠিকানা
-      </label>
-      <input
-        type="email" id="pdfEmailInput"
-        placeholder="example@gmail.com"
-        autocomplete="email"
-        style="width:100%;box-sizing:border-box;border:1.5px solid #cbd5e1;border-radius:9px;padding:11px 14px;font-size:14px;color:#0f172a;font-family:'Hind Siliguri',sans-serif;outline:none;transition:border-color .15s;margin-bottom:6px"
-        onfocus="this.style.borderColor='#0b3d2e'"
-        onblur="this.style.borderColor='#cbd5e1'"
-      >
-      <div id="pdfEmailError" style="display:none;font-size:12px;color:#dc2626;margin-bottom:8px;font-family:'Hind Siliguri',sans-serif">
-        সঠিক ইমেইল ঠিকানা দিন।
-      </div>
-      <div id="pdfEmailStatus" style="display:none;font-size:12.5px;color:#166534;font-family:'Hind Siliguri',sans-serif;margin-bottom:8px;font-weight:600">
-        ✓ পিডিএফ আপনার ইমেইলে পাঠানো হচ্ছে। কিছুক্ষণের মধ্যে পৌঁছাবে।
-      </div>
-
-      <button id="pdfEmailSubmit" style="
-        width:100%;padding:11px;margin-top:4px;
-        background:#0b3d2e;color:#fff;border:none;border-radius:9px;
-        font-family:'Hind Siliguri',sans-serif;font-size:14px;font-weight:700;
-        cursor:pointer;transition:background .15s;
-        display:flex;align-items:center;justify-content:center;gap:8px;
-      "
-        onmouseover="this.style.background='#0d4e3a'"
-        onmouseout="if(!this.disabled)this.style.background='#0b3d2e'"
-      >
-        পিডিএফ পাঠান →
-      </button>
-
-      <button id="pdfEmailCancel" style="
-        width:100%;padding:9px;margin-top:8px;
-        background:none;color:#64748b;border:1px solid #e2e8f0;border-radius:9px;
-        font-family:'Hind Siliguri',sans-serif;font-size:13px;
-        cursor:pointer;transition:background .15s;
-      "
-        onmouseover="this.style.background='#f8fafc'"
-        onmouseout="this.style.background='none'"
-      >
-        বাতিল
-      </button>
-    </div>
-  </div>
-  </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </body>
