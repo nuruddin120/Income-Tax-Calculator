@@ -510,23 +510,12 @@
       <span class="value deduct" id="v-tds-row">− ৳ 0</span>
     </div>
 
-    <!-- ── Section 170: Filing Period Adjustment ── -->
-    <div id="s170Wrap" style="display:none;margin-top:10px">
-      <div class="row" style="border-top:1.5px dashed var(--line);padding-top:12px;margin-top:4px">
-        <span class="name" id="s170Label">ধারা ১৭০ সমন্বয়</span>
-        <span class="value" id="v-s170">৳ 0</span>
-      </div>
-      <div style="margin-top:10px;border:1.5px solid var(--line);border-radius:10px;padding:18px 20px">
-        <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px" id="s170BoxLabel">সমন্বিত পরিশোধযোগ্য কর</div>
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(22px,5vw,30px);font-weight:600;margin:2px 0 6px" id="v-adjusted">৳ 0</div>
-        <div style="font-size:13px;color:var(--muted)" id="s170Msg"></div>
-      </div>
-    </div>
-
     <div class="final-box navy">
       <div class="flabel" id="finalTaxLabel">রিটার্ন দাখিলের সময় কর দিতে হবে · Tax Due at Return Filing</div>
       <div class="famount" id="v-nettax">৳ 0</div>
       <div class="fmsg" id="taxMsg">আয়ের তথ্য দিলে প্রদেয় কর এখানে দেখাবে।</div>
+      <div id="s170Note" style="display:none;margin-top:8px;padding:8px 11px;border-radius:6px;font-size:12px;line-height:1.5;font-family:'Hind Siliguri',sans-serif">
+      </div>
       <div id="investWarning" style="display:none;margin-top:10px;padding:10px 12px;background:rgba(251,191,36,0.15);border-left:3px solid #f59e0b;border-radius:0 6px 6px 0;font-size:12.5px;line-height:1.55;color:#92400e;font-family:'Hind Siliguri',sans-serif">
         ⚠ উপরের হিসাবে সর্বোচ্চ বিনিয়োগ রিবেট <strong id="warnRebateAmt">৳ 0</strong> বিবেচনায় নেওয়া হয়েছে। প্রকৃতপক্ষে বিনিয়োগ না করলে রিবেট পাওয়া যাবে না এবং অতিরিক্ত <strong id="warnExtraAmt">৳ 0</strong> কর দিতে হবে।
       </div>
@@ -961,36 +950,43 @@
       ? Math.max(0, payableBase - s170Amount)
       : payableBase + s170Amount;
 
-    // Update Section 170 UI
-    const s170Wrap = document.getElementById('s170Wrap');
+    // Update Section 170: adjust final amount directly + show note
+    const s170NoteEl = document.getElementById('s170Note');
     if (s170Type === 'none') {
-      s170Wrap.style.display = 'none';
+      s170NoteEl.style.display = 'none';
     } else {
-      s170Wrap.style.display = 'block';
+      // Adjust the displayed final amount
       const periodNames = { q1:'জুলাই–সেপ্টেম্বর', q3:'জানুয়ারি–মার্চ', q4:'এপ্রিল–জুন' };
       const pName = periodNames[filingPeriod];
-      const s170LabelEl    = document.getElementById('s170Label');
-      const s170ValEl      = document.getElementById('v-s170');
-      const s170BoxLabelEl = document.getElementById('s170BoxLabel');
-      const s170AdjEl      = document.getElementById('v-adjusted');
-      const s170MsgEl      = document.getElementById('s170Msg');
 
+      // Update balance with s170 adjustment
+      balance = s170Type === 'incentive'
+        ? balance - s170Amount
+        : balance + s170Amount;
+      isRefund = balance < 0;
+
+      // Redisplay adjusted amount in navy box
+      const labelElS  = document.getElementById('finalTaxLabel');
+      const amountElS = document.getElementById('v-nettax');
+      labelElS.textContent  = isRefund
+        ? 'ফেরতযোগ্য কর (Tax Refund)'
+        : 'রিটার্ন দাখিলের সময় কর দিতে হবে · Tax Due at Return Filing';
+      amountElS.textContent = bdt(Math.abs(balance));
+      amountElS.style.color = isRefund ? '#7ee8a2' : '#f7d489';
+
+      // Show small note
+      s170NoteEl.style.display = 'block';
       if (s170Type === 'incentive') {
-        s170LabelEl.textContent    = 'ইনসেন্টিভ বোনাস — ধারা ১৭০ ('+pName+')';
-        s170ValEl.textContent      = '− '+bdt(s170Amount);
-        s170ValEl.style.color      = 'var(--green)';
-        s170BoxLabelEl.textContent = 'সমন্বিত পরিশোধযোগ্য কর (ইনসেন্টিভ বাদে)';
-        s170AdjEl.style.color      = 'var(--green)';
-        s170MsgEl.textContent      = bdt(payableBase)+' প্রদেয় করের '+s170Amount.toLocaleString('en-IN')+' টাকা ইনসেন্টিভ বাদে সর্বোচ্চ করণীয়।';
+        s170NoteEl.style.background = 'rgba(74,222,128,0.12)';
+        s170NoteEl.style.borderLeft = '3px solid #22c55e';
+        s170NoteEl.style.color      = '#166534';
+        s170NoteEl.innerHTML = '✓ ধারা ১৭০ ('+pName+'): ইনসেন্টিভ <strong>'+bdt(s170Amount)+'</strong> বাদে হিসাব করা হয়েছে।';
       } else {
-        s170LabelEl.textContent    = 'বিলম্ব জরিমানা — ধারা ১৭০ ('+pName+')';
-        s170ValEl.textContent      = '+ '+bdt(s170Amount);
-        s170ValEl.style.color      = 'var(--error)';
-        s170BoxLabelEl.textContent = 'সমন্বিত পরিশোধযোগ্য কর (জরিমানা সহ)';
-        s170AdjEl.style.color      = 'var(--error)';
-        s170MsgEl.textContent      = bdt(payableBase)+' প্রদেয় করের উপর '+bdt(s170Amount)+' বিলম্ব জরিমানা যোগে মোট পরিশোধযোগ্য।';
+        s170NoteEl.style.background = 'rgba(239,68,68,0.1)';
+        s170NoteEl.style.borderLeft = '3px solid #ef4444';
+        s170NoteEl.style.color      = '#991b1b';
+        s170NoteEl.innerHTML = '⚠ ধারা ১৭০ ('+pName+'): বিলম্ব জরিমানা <strong>'+bdt(s170Amount)+'</strong> যোগে হিসাব করা হয়েছে।';
       }
-      s170AdjEl.textContent = bdt(adjustedBalance);
     }
 
     window.pdfData = {
@@ -1161,7 +1157,7 @@
     document.getElementById('taxpayerName').value='';
     document.getElementById('newTaxpayer').checked=false;
     document.getElementById('filingPeriod').value='q2';
-    document.getElementById('s170Wrap').style.display='none';
+    document.getElementById('s170Note').style.display='none';
     document.getElementById('investWarning').style.display='none';
     document.getElementById('category').value='375000';
     document.getElementById('v-nettax').style.color='#f7d489';
@@ -1462,64 +1458,26 @@
 
       y += boxH + 8;
 
-      // ── SECTION 170 ──────────────────────────
+      // ── SECTION 170 NOTE (compact) ──────────────
       if(r.s170Type && r.s170Type !== 'none'){
-        if(y > 252) { doc.addPage(); y = 16; }
+        if(y > 270) { doc.addPage(); y = 16; }
         const periodLabels = {
-          q1: 'July – September (Incentive Period)',
-          q3: 'January – March (Late Filing)',
-          q4: 'April – June (Late Filing)'
+          q1: 'July – September', q3: 'January – March', q4: 'April – June'
         };
-        const s170PeriodLabel = periodLabels[r.filingPeriod] || '';
         const isIncentive = r.s170Type === 'incentive';
+        const pLabel = periodLabels[r.filingPeriod] || '';
+        const noteColor = isIncentive ? [11,61,46] : [155,20,20];
+        const bgColor   = isIncentive ? [230,245,235] : [254,235,235];
 
-        // Section header
+        doc.setFillColor(...bgColor);
+        doc.roundedRect(M, y-2, W-M*2, 11, 1.5, 1.5, 'F');
         doc.setFontSize(7.5); doc.setFont('helvetica','bold');
-        doc.setTextColor(isIncentive ? 11 : 179, isIncentive ? 61 : 50, isIncentive ? 46 : 46);
-        doc.text('SECTION 170 ADJUSTMENT — '+s170PeriodLabel, M, y); y += 5;
-        doc.setDrawColor(isIncentive ? 11 : 179, isIncentive ? 61 : 50, isIncentive ? 46 : 46);
-        doc.setLineWidth(0.4);
-        doc.line(M, y, W-M, y); doc.setLineWidth(0.2); y += 5;
-
-        rowPDF('Tax Payable in Return (Base for Section 170)', bdt2(Math.abs(r.balance||0)));
-        if(isIncentive){
-          doc.setFontSize(9.5); doc.setFont('helvetica','normal');
-          doc.setTextColor(11,61,46);
-          doc.text('Incentive Bonus (Early Filing)', M+1, y);
-          doc.setFont('helvetica','bold');
-          doc.text('- '+bdt2(r.s170Amount), W-M-1, y, {align:'right'});
-          doc.setDrawColor(220,225,222); doc.setLineWidth(0.15);
-          doc.line(M, y+1.5, W-M, y+1.5); doc.setLineWidth(0.2);
-          y += 7;
-        } else {
-          doc.setFontSize(9.5); doc.setFont('helvetica','normal');
-          doc.setTextColor(179,50,46);
-          doc.text('Late Filing Penalty', M+1, y);
-          doc.setFont('helvetica','bold');
-          doc.text('+ '+bdt2(r.s170Amount), W-M-1, y, {align:'right'});
-          doc.setDrawColor(220,225,222); doc.setLineWidth(0.15);
-          doc.line(M, y+1.5, W-M, y+1.5); doc.setLineWidth(0.2);
-          doc.setTextColor(28,36,32); y += 7;
-        }
-
-        // Adjusted final box
-        const adjBoxH = 18;
-        const adjColor = isIncentive ? [11,61,46] : [155,20,20];
-        doc.setFillColor(...adjColor);
-        doc.roundedRect(M, y, W-M*2, adjBoxH, 2, 2, 'F');
-        doc.setFillColor(...adjColor); doc.rect(M, y, 3, adjBoxH, 'F');
-        doc.setFontSize(7); doc.setFont('helvetica','bold');
-        doc.setTextColor(isIncentive ? 169 : 255, isIncentive ? 199 : 180, isIncentive ? 180 : 180);
-        doc.text(isIncentive ? 'ADJUSTED TAX DUE AT RETURN FILING (AFTER INCENTIVE)' : 'ADJUSTED TAX DUE AT RETURN FILING (INCLUDING PENALTY)', M+6, y+7);
-        doc.setFontSize(15); doc.setTextColor(255,255,255);
-        doc.text(bdt2(r.adjustedBalance), M+6, y+15);
-        doc.setFontSize(7.5); doc.setFont('helvetica','normal');
-        doc.setTextColor(isIncentive ? 212 : 255, isIncentive ? 228 : 200, isIncentive ? 218 : 200);
-        const adjMsg = isIncentive
-          ? 'Early submission incentive of '+bdt2(r.s170Amount)+' applied.'
-          : 'Late filing penalty of '+bdt2(r.s170Amount)+' added.';
-        doc.text(adjMsg, W-M-3, y+9, {align:'right'});
-        y += adjBoxH + 8;
+        doc.setTextColor(...noteColor);
+        const noteText = isIncentive
+          ? 'Section 170 ('+pLabel+'): Incentive '+bdt2(r.s170Amount)+' deducted. Amount shown is after adjustment.'
+          : 'Section 170 ('+pLabel+'): Late penalty '+bdt2(r.s170Amount)+' added. Amount shown includes penalty.';
+        doc.text(noteText, M+3, y+4.5);
+        y += 14;
       }
 
       // ── INVESTMENT OPTIONS ────────────────
