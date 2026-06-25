@@ -983,7 +983,7 @@
     {id:'sherpur_diabetic',label:'শেরপুর ডায়াবেটিক সমিতি',                labelEn:'Sherpur Diabetic Samity',           limit:null},
     {id:'maona_diabetic', label:'মাওনা ডায়াবেটিক এসোসিয়েশন',             labelEn:'Maona Diabetic Association',        limit:null},
     {id:'thalassemia',    label:'বাংলাদেশ থ্যালাসেমিয়া সমিতি',            labelEn:'Bangladesh Thalassaemia Samity',    limit:null},
-    {id:'autism',         label:'অটিজম ওয়েলফেয়ার ফাউন্ডেশন',             labelEn:'Autism Welfare Foundation',         limit:null},
+    {id:'autism',         label:'অটিজম ওয়ানফেয়ার ফাউন্ডেশন',             labelEn:'Autism Welfare Foundation',         limit:null},
     {id:'brac',           label:'ব্র্যাক (BRAC)',                         labelEn:'BRAC',                              limit:null},
     {id:'ramkrishna',     label:'রামকৃষ্ণ মঠ ও রামকৃষ্ণ মিশন, ঢাকা',      labelEn:'Ramkrishna Math & Mission, Dhaka', limit:null},
     {id:'ctg_hospital',   label:'চট্টগ্রাম মা ও শিশু হাসপাতাল',           labelEn:'Chittagong Maa O Shishu Hospital', limit:null},
@@ -1337,7 +1337,7 @@
       secTitle('TAX SLAB CALCULATION');
       const engLabels = [
         'Tax Exempted (First BDT '+fmtN(r.exemptionLimit)+')',
-        'Next BDT 3,00,000',
+        'Next BDT 3,0,000',
         'Next BDT 4,0,000',
         'Next BDT 5,0,000',
         'Next BDT 20,0,000',
@@ -1432,8 +1432,8 @@
           ['Life insurance premium paid by the individual','10% of policy value'],
           ['Recognized provident fund (employer + employee contribution)','No limit'],
           ['Superannuation fund contribution','No limit'],
-          ['Govt. securities: T-bill, Bond, Sanchayapatra, Debenture, Shariah securities','BDT 5,00,000'],
-          ['Unit certificates, Mutual funds, ETF or joint investment schemes','BDT 5,00,000'],
+          ['Govt. securities: T-bill, Bond, Sanchayapatra, Debenture, Shariah securities','BDT 5,0,000'],
+          ['Unit certificates, Mutual funds, ETF or joint investment schemes','BDT 5,0,000'],
           ['Deposit Pension Scheme (DPS) or Monthly Savings Scheme','BDT 1,20,000'],
           ['BSEC regulated stock exchange listed securities','No limit'],
           ['NBR approved charitable hospital (outside city corporation area)','No limit'],
@@ -1462,13 +1462,13 @@
       });
       y = doc.lastAutoTable.finalY + 8;
 
-      if(y > 265) { doc.addPage(); y = 16; }
-      const advTxt = 'For accurate income tax return filing, please consult an experienced Income Tax Practitioner. Incorrect returns may result in penalties and legal complications.';
+      if(y > 260) { doc.addPage(); y = 16; }
+      const advTxt = 'For accurate income tax return filing, please consult an experienced Income Tax Practitioner. Incorrect returns may result in penalties and legal complications. For any feedback, suggestions, or advice, please feel free to reach out via WhatsApp.';
       const advLines = doc.splitTextToSize(advTxt, W-M*2-8);
       doc.setFillColor(11,61,46); doc.rect(M, y, 2.5, advLines.length*4.5+10, 'F');
       doc.setFontSize(8.5); doc.setFont('helvetica','bold');
       doc.setTextColor(11,61,46);
-      doc.text('For Accurate Tax Return — Contact Us', M+5, y+7);
+      doc.text('For Accurate Tax Return & Queries — Contact Us', M+5, y+7);
       doc.setFontSize(8); doc.setFont('helvetica','normal');
       doc.setTextColor(80,95,85);
       doc.text(advLines, M+5, y+13);
