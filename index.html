@@ -284,13 +284,11 @@
     <span class="tax-year">করবর্ষ: ২০২৬-২৭ এবং ২০২৭-২৮</span>
   </header>
 
-  <!-- Card 1: Monthly salaries -->
   <div class="card">
     <div class="section-label">মাসিক বেতন — জুলাই থেকে জুন</div>
     <div class="months-grid" id="monthsGrid"></div>
   </div>
 
-  <!-- Card 2: Bonuses -->
   <div class="card">
     <div class="section-label">বোনাস ও অতিরিক্ত আয় (বাৎসরিক)</div>
     <div class="two-col">
@@ -311,7 +309,6 @@
     </div>
   </div>
 
-  <!-- Card 3: Taxpayer info -->
   <div class="card">
     <div class="section-label">করদাতার তথ্য</div>
     <div class="field" style="margin-bottom:14px">
@@ -325,7 +322,7 @@
         <option value="375000">সাধারণ পুরুষ — করমুক্ত সীমা ৩,৭৫,০০০ টাকা</option>
         <option value="425000">মহিলা / ৬৫ বছর বা তার বেশি বয়সী — ৪,২৫,০০০ টাকা</option>
         <option value="500000">তৃতীয় লিঙ্গ / প্রতিবন্ধী — ৫,০০,০০০ টাকা</option>
-        <option value="525000">গেজেটেড মুক্তিযোদ্ধা / জুলাই যোদ্ধা — ৫,২৫,০০০ টাকা</option>
+        <option value="525000">গেজেेटेड মুক্তিযোদ্ধা / জুলাই যোদ্ধা — ৫,২৫,০০০ টাকা</option>
       </select>
     </div>
     <div class="two-col" style="margin-top:12px">
@@ -358,7 +355,6 @@
     </div>
   </div>
 
-  <!-- Card: Existing investments -->
   <div class="card">
     <div class="section-label">বিদ্যমান বিনিয়োগ <span style="font-weight:400;color:var(--muted)">(যদি থাকে)</span></div>
 
@@ -369,7 +365,7 @@
         <option value="insurance">জীবন বীমা প্রিমিয়াম</option>
         <option value="provident">স্বীকৃত প্রভিডেন্ট ফান্ড</option>
         <option value="superannuation">সুপারঅ্যানুয়েশন ফান্ড</option>
-        <option value="govt_sec">সরকারি সিকিউরিটিজ (সঞ্চয়পত্র, বন্ড ইত্যাদি) — সীমা ৳৫,০০,০০০</option>
+        <option value="govt_sec">सरकारी সিকিউরিটিজ (সঞ্চয়পত্র, বন্ড ইত্যাদি) — সীমা ৳৫,০০,০০০</option>
         <option value="mutual">মিউচুয়াল ফান্ড / ইউনিট সার্টিফিকেট / ETF — সীমা ৳৫,০০,০০০</option>
         <option value="dps">ডিপিএস / মাসিক সঞ্চয় স্কিম — সীমা ৳১,২০,০০০</option>
         <option value="bsec">BSEC তালিকাভুক্ত সিকিউরিটিজ</option>
@@ -393,7 +389,6 @@
       </select>
     </div>
 
-    <!-- Insurance: two fields -->
     <div id="insuranceFields" style="display:none" class="two-col">
       <div class="field">
         <label for="investPremium">মোট প্রিমিয়াম প্রদত্ত</label>
@@ -409,7 +404,6 @@
       </div>
     </div>
 
-    <!-- Standard amount -->
     <div id="standardInvestField" style="display:none" class="field">
       <label>বিনিয়োগকৃত পরিমাণ <span id="investLimitHint" style="font-weight:400;color:var(--muted);font-size:12px"></span></label>
       <div class="iw"><span class="tk">৳</span>
@@ -431,7 +425,6 @@
     <button type="button" class="reset" id="resetBtn">↺ সব মুছে দিন (Reset)</button>
   </div>
 
-  <!-- ── Section 1: Income & Investment ── -->
   <section aria-live="polite">
     <div class="result-block">
       <div class="block-title">আয় ও বিনিয়োগ রিবেট হিসাব</div>
@@ -458,7 +451,6 @@
       <div class="fmsg" id="investMsg">আয়ের তথ্য দিলে এখানে আপনার বিনিয়োগ লক্ষ্য দেখা যাবে।</div>
     </div>
 
-    <!-- Investment analysis (shown when existing investments are entered) -->
     <div id="investAnalysis" style="display:none;margin-top:8px">
       <div class="row">
         <span class="name">বিনিয়োগকৃত মোট (অনুমোদনযোগ্য)</span>
@@ -522,7 +514,6 @@
     </div>
   </section>
 
-  <!-- Print / PDF button -->
   <button type="button" class="print-btn" id="printBtn">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -532,7 +523,6 @@
     বিস্তারিত ব্যাখ্যাসহ পিডিএফ
   </button>
 
-  <!-- Investment options table -->
   <section class="options">
     <h2>কোথায় বিনিয়োগ করবেন — Allowable Investment Options</h2>
     <p class="sub">নিচের খাতগুলোতে বিনিয়োগ বা দান করলে ট্যাক্স ক্রেডিট পাওয়া যায়।</p>
@@ -573,9 +563,7 @@
     </table>
   </section>
 
-</div><!-- /wrap -->
-
-<footer>
+</div><footer>
   <div class="footer-inner">
     <div>
       <span class="f-name">Md. Nur Uddin Mahmud</span>
@@ -736,8 +724,6 @@
     const annual   = salaryTotal + festival + other;
     const taxFree  = Math.min(annual/3, 500000);
     const taxable  = annual - taxFree;
-    // অর্থ আইন ২০২৬: Maximum Rebate = MIN(করযোগ্য আয়ের ৩%, বিদ্যমান বিনিয়োগের ১০%, ৭৫০,০০০)
-    // Required Investment = Maximum Rebate ÷ ১০%
     const maxRebate= Math.min(Math.round(taxable * 0.03), 750000);
     const reqInvest= Math.round(maxRebate / 0.10);
 
@@ -755,24 +741,17 @@
 
     document.getElementById('v-gross').textContent = bdt(grossTax);
 
-    // Minimum tax rules:
-    // grossTax = 0 + new taxpayer  → ৳1,000
-    // grossTax = 0 + others        → ৳0
-    // 0 < grossTax ≤ 5000          → ৳5,000 (min), rebate has NO effect
-    // grossTax > 5000              → max(grossTax - rebate, 5,000)
-    //   └ rebate useful only for the portion above 5,000
     const isNew = document.getElementById('newTaxpayer').checked;
     let finalTax    = 0;
     let minApplied  = false;
-    let appliedRebate = 0;   // rebate that actually reduces tax
-    let usefulInvest  = 0;   // investment required for that rebate
+    let appliedRebate = 0;   
+    let usefulInvest  = 0;   
 
     if(grossTax > 5000){
       const afterRebate = grossTax - maxRebate;
       finalTax    = Math.max(afterRebate, 5000);
       minApplied  = afterRebate < 5000;
       if(minApplied){
-        // Can only reduce down to 5000
         appliedRebate = grossTax - 5000;
         usefulInvest  = Math.round(appliedRebate / 0.10);
       } else {
@@ -780,7 +759,6 @@
         usefulInvest  = reqInvest;
       }
     } else if(grossTax > 0){
-      // 1 – 5000: minimum kicks in, rebate has zero effect
       finalTax   = 5000;
       minApplied = true;
     } else if(isNew){
@@ -791,8 +769,7 @@
     // Show applied rebate in slab section
     document.getElementById('v-rebate2').textContent = '− '+bdt(appliedRebate);
 
-    // 4. Investment section — depends on whether rebate is useful
-    const investUseful = grossTax > 5000;  // only when slab tax exceeds minimum
+    const investUseful = grossTax > 5000;  
 
     document.getElementById('rebate-row').style.display        = investUseful ? '' : 'none';
     document.getElementById('rebate-income-row').style.display = investUseful ? '' : 'none';
@@ -804,32 +781,115 @@
       document.getElementById('v-invest').textContent = 'প্রযোজ্য নয়';
       document.getElementById('investMsg').innerHTML  =
         'বিনিয়োগ করলেও প্রদেয় কর কমবে না — <strong>বিনিয়োগের প্রয়োজন নেই।</strong>';
-    } else if(minApplied){
-      document.getElementById('v-invest').textContent = bdt(usefulInvest);
-      // investMsg will be set in the analysis block below
     } else {
       document.getElementById('v-invest').textContent = bdt(usefulInvest);
-      // investMsg will be set in the analysis block below
     }
 
     document.getElementById('v-tds-row').textContent    = '− '+bdt(tds);
 
-    // Balance after TDS: প্রদেয় আয়কর = মোট কর - রিবেট - TDS
     let balance = finalTax - tds;
     let isRefund = balance < 0;
     document.getElementById('v-nettax-row').textContent = bdt(Math.abs(balance));
     if(isRefund) document.getElementById('v-nettax-row').style.color = 'var(--green)';
     else document.getElementById('v-nettax-row').style.color = '';
+
+    // Existing investment analysis
+    const totalAllowableInvest = computeEffectiveAllowable(existingInvestments);
+    const existRebate   = Math.min(Math.round(totalAllowableInvest * 0.10), maxRebate);
+    const remainInvest  = (investUseful && totalAllowableInvest > 0)
+      ? Math.max(Math.round((maxRebate - existRebate) / 0.10), 0) : 0;
+
+    if(investUseful && totalAllowableInvest > 0){
+      document.getElementById('v-rebate2').textContent = '− '+bdt(existRebate);
+      finalTax = Math.max(grossTax - existRebate, 5000);
+      balance = finalTax - tds;
+      isRefund = balance < 0;
+      document.getElementById('v-nettax-row').textContent = bdt(Math.abs(balance));
+      if(isRefund) document.getElementById('v-nettax-row').style.color = 'var(--green)';
+      else document.getElementById('v-nettax-row').style.color = '';
+    }
+
+    if(investUseful && totalAllowableInvest > 0){
+      document.getElementById('investAnalysis').style.display = 'block';
+      document.getElementById('v-exist-invest').textContent  = bdt(totalAllowableInvest);
+      document.getElementById('v-exist-rebate').textContent  = bdt(existRebate);
+      if(remainInvest <= 0){
+        document.getElementById('remaining-row').style.display = 'none';
+        document.getElementById('v-invest-status').textContent = '✓ সর্বোচ্চ রিবেট অর্জিত হয়েছে';
+        document.getElementById('investMsg').innerHTML =
+          '<strong>✓ সর্বোচ্চ রিবেট অর্জিত।</strong> বিদ্যমান বিনিয়োগ <strong>'+bdt(totalAllowableInvest)+'</strong> থেকে <strong>'+bdt(existRebate)+'</strong> রিবেট পাবেন।';
+      } else {
+        document.getElementById('remaining-row').style.display = 'flex';
+        document.getElementById('v-remaining-invest').textContent = bdt(remainInvest);
+        document.getElementById('v-invest-status').textContent = '';
+        document.getElementById('investMsg').innerHTML =
+          'বিদ্যমান বিনিয়োগ <strong>'+bdt(totalAllowableInvest)+'</strong>। সর্বোচ্চ রিবেটের জন্য আরও <strong style="color:#f7d489">'+bdt(remainInvest)+'</strong> বিনিয়োগ করুন।';
+      }
+    } else {
+      document.getElementById('investAnalysis').style.display = 'none';
+      if(investUseful){
+        if(minApplied){
+          document.getElementById('investMsg').innerHTML =
+            'মোট কর <strong>'+bdt(grossTax)+'</strong> — নূন্যতম কর ৳৫,০০০ পর্যন্ত কমাতে <strong>'+bdt(usefulInvest)+'</strong> বিনিয়োগ করলে <strong>'+bdt(appliedRebate)+'</strong> রিবেট পাবেন।';
+        } else {
+          document.getElementById('investMsg').innerHTML =
+            'সর্বোচ্চ <strong>'+bdt(appliedRebate)+'</strong> রিবেট পেতে আনুমানিক <strong>'+bdt(usefulInvest)+'</strong> বিনিয়োগ করতে হবে।';
+        }
+      }
+    }
+
+    const warnEl = document.getElementById('investWarning');
+    if(investUseful && totalAllowableInvest === 0 && appliedRebate > 0){
+      warnEl.style.display = 'block';
+      document.getElementById('warnRebateAmt').textContent = bdt(appliedRebate);
+      document.getElementById('warnExtraAmt').textContent  = bdt(appliedRebate);
+    } else {
+      warnEl.style.display = 'none';
+    }
+
+    // ── Section 170 — Filing period incentive / penalty ──
+    const filingPeriod  = document.getElementById('filingPeriod').value;
+    const payableBase   = finalTax - tds; // ভিত্তি পরিবর্তন: প্রদেয় আয়করের উপর হিসাব হবে
+    let s170Amount = 0, s170Type = 'none';
+
+    if (!isRefund && payableBase > 0) {
+      if (filingPeriod === 'q1') {
+        // গ্রস ট্যাক্স ১ থেকে ৫০০০ টাকার মধ্যে হলে কোনো ইনসেন্টিভ পাবেনা
+        if (grossTax > 5000) {
+          s170Amount = Math.min(Math.round(payableBase * 0.05), 25000);
+          s170Type   = 'incentive';
+        } else {
+          s170Type   = 'none';
+        }
+      } else if (filingPeriod === 'q3') {
+        s170Amount = Math.max(Math.round(payableBase * 0.02), 3000);
+        s170Type   = 'penalty';
+      } else if (filingPeriod === 'q4') {
+        s170Amount = Math.max(Math.round(payableBase * 0.05), 5000);
+        s170Type   = 'penalty';
+      }
+    }
+
+    const adjustedBalance = s170Type === 'incentive'
+      ? Math.max(0, payableBase - s170Amount)
+      : payableBase + s170Amount;
+
+    // Final balance injection
+    if (s170Type !== 'none') {
+      balance = s170Type === 'incentive' ? balance - s170Amount : balance + s170Amount;
+      isRefund = balance < 0;
+    }
+
+    // Display updates
     const labelEl  = document.getElementById('finalTaxLabel');
     const amountEl = document.getElementById('v-nettax');
-
     labelEl.textContent  = isRefund
       ? 'ফেরতযোগ্য কর (Tax Refund)'
       : 'রিটার্ন দাখিলের সময় কর দিতে হবে · Tax Due at Return Filing';
     amountEl.textContent = bdt(Math.abs(balance));
     amountEl.style.color = isRefund ? '#7ee8a2' : '#f7d489';
 
-    // Tax message
+    // Tax Messages Refined
     if(annual <= 0){
       document.getElementById('taxMsg').textContent='আয়ের তথ্য দিলে প্রদেয় কর এখানে দেখাবে।';
     } else if(grossTax === 0 && !isNew){
@@ -839,18 +899,41 @@
     } else if(isRefund){
       document.getElementById('taxMsg').innerHTML=
         'প্রদেয় কর <strong>'+bdt(finalTax)+'</strong> এর বিপরীতে TDS কাটা হয়েছে <strong>'+bdt(tds)+'</strong>। রিটার্নে <strong>'+bdt(Math.abs(balance))+'</strong> ফেরত পাবেন।';
-    } else if(grossTax > 0 && grossTax <= 5000){
-      document.getElementById('taxMsg').innerHTML=
-        'মোট কর ৳'+num(grossTax)+' হলেও নূন্যতম কর <strong>৳ ৫,০০০</strong> প্রযোজ্য। TDS বাদে <strong>'+bdt(balance)+'</strong> পরিশোধ করতে হবে।';
-    } else if(minApplied){
-      document.getElementById('taxMsg').innerHTML=
-        'মোট কর <strong>'+bdt(grossTax)+'</strong> — রিবেট বাদে সর্বোচ্চ ৳৫,০০০ পর্যন্ত কমানো সম্ভব। TDS বাদে <strong>'+bdt(balance)+'</strong> পরিশোধ করতে হবে।';
     } else {
-      document.getElementById('taxMsg').innerHTML=
-        'মোট কর <strong>'+bdt(grossTax)+'</strong> থেকে রিবেট ও TDS বাদে <strong>'+bdt(balance)+'</strong> পরিশোধ করতে হবে।';
+      const displayRebate = (investUseful && totalAllowableInvest > 0) ? existRebate : appliedRebate;
+      if (grossTax > 0 && grossTax <= 5000) {
+        document.getElementById('taxMsg').innerHTML=
+          'মোট কর ৳'+num(grossTax)+' হলেও নূন্যতম কর <strong>৳ ৫,০০০</strong> প্রযোজ্য। TDS ও আনুষঙ্গিক সমন্বয় বাদে <strong>'+bdt(balance)+'</strong> পরিশোধ করতে হবে।';
+      } else if(minApplied) {
+        document.getElementById('taxMsg').innerHTML=
+          'মোট কর <strong>'+bdt(grossTax)+'</strong> — রিবেট বাদে সর্বোচ্চ ৳৫,০০০ পর্যন্ত কমানো সম্ভব। TDS ও আনুষঙ্গিক সমন্বয় বাদে <strong>'+bdt(balance)+'</strong> পরিশোধ করতে হবে।';
+      } else {
+        document.getElementById('taxMsg').innerHTML =
+          'মোট কর <strong>'+bdt(grossTax)+'</strong> থেকে বিনিয়োগ রিবেট <strong>'+bdt(displayRebate)+'</strong> ও TDS বাদে এবং আনুষঙ্গিক সমন্বয় সহ <strong>'+bdt(balance)+'</strong> পরিশোধ করতে হবে।';
+      }
     }
 
-    // Monthly TDS: tax on (salary + festival bonus only) / 12
+    const s170NoteEl = document.getElementById('s170Note');
+    if (s170Type === 'none') {
+      s170NoteEl.style.display = 'none';
+    } else {
+      const periodNames = { q1:'জুলাই–সেপ্টেম্বর', q3:'জানুয়ারি–মার্চ', q4:'এপ্রিল–জুন' };
+      const pName = periodNames[filingPeriod];
+      s170NoteEl.style.display = 'block';
+      if (s170Type === 'incentive') {
+        s170NoteEl.style.background = 'rgba(74,222,128,0.12)';
+        s170NoteEl.style.borderLeft = '3px solid #22c55e';
+        s170NoteEl.style.color      = '#166534';
+        s170NoteEl.innerHTML = '✓ ধারা ১৭০ ('+pName+'): ইনসেন্টিভ <strong>'+bdt(s170Amount)+'</strong> বাদে হিসাব করা হয়েছে।';
+      } else {
+        s170NoteEl.style.background = 'rgba(239,68,68,0.1)';
+        s170NoteEl.style.borderLeft = '3px solid #ef4444';
+        s170NoteEl.style.color      = '#991b1b';
+        s170NoteEl.innerHTML = '⚠ ধারা ১৭০ ('+pName+'): বিলম্ব জরিমানা <strong>'+bdt(s170Amount)+'</strong> যোগে হিসাব করা হয়েছে।';
+      }
+    }
+
+    // Monthly TDS
     const festivalRaw = parseFloat(bonusFields.festival.input.value)||0;
     const tdsBase     = salaryTotal + festivalRaw;
     const tdsDeduct   = Math.min(tdsBase / 3, 500000);
@@ -866,152 +949,11 @@
     }
     const monthlyTDS = Math.round(tdsFinal / 12);
 
-    // Existing investment analysis
-    const totalAllowableInvest = computeEffectiveAllowable(existingInvestments);
-    const existRebate   = Math.min(Math.round(totalAllowableInvest * 0.10), maxRebate);
-    const remainInvest  = (investUseful && totalAllowableInvest > 0)
-      ? Math.max(Math.round((maxRebate - existRebate) / 0.10), 0) : 0;
-
-    // Update Investment Rebate display:
-    // বিদ্যমান বিনিয়োগ থাকলে → existRebate (actual); না থাকলে → appliedRebate (potential max)
-    if(investUseful && totalAllowableInvest > 0){
-      document.getElementById('v-rebate2').textContent = '− '+bdt(existRebate);
-      // Recalculate finalTax based on actual existRebate
-      finalTax = Math.max(grossTax - existRebate, 5000);
-      document.getElementById('v-tds-row').textContent    = '− '+bdt(tds);
-      // Recalculate balance
-      const newBalance = finalTax - tds;
-      const newIsRefund = newBalance < 0;
-      document.getElementById('v-nettax-row').textContent = bdt(Math.abs(newBalance));
-      if(newIsRefund) document.getElementById('v-nettax-row').style.color = 'var(--green)';
-      else document.getElementById('v-nettax-row').style.color = '';
-      const labelEl2  = document.getElementById('finalTaxLabel');
-      const amountEl2 = document.getElementById('v-nettax');
-      labelEl2.textContent  = newIsRefund
-        ? 'ফেরতযোগ্য কর (Tax Refund)'
-        : 'রিটার্ন দাখিলের সময় কর দিতে হবে · Tax Due at Return Filing';
-      amountEl2.textContent = bdt(Math.abs(newBalance));
-      amountEl2.style.color = newIsRefund ? '#7ee8a2' : '#f7d489';
-      // Update balance/isRefund for pdfData
-      balance = newBalance;
-      isRefund = newIsRefund;
-      // Update taxMsg to reflect actual existRebate
-      if(newIsRefund){
-        document.getElementById('taxMsg').innerHTML =
-          'TDS <strong>'+bdt(tds)+'</strong> প্রদেয় কর <strong>'+bdt(finalTax)+'</strong> এর বেশি। ফেরত পাবেন <strong>'+bdt(Math.abs(newBalance))+'</strong>।';
-      } else {
-        document.getElementById('taxMsg').innerHTML =
-          'মোট কর <strong>'+bdt(grossTax)+'</strong> থেকে বিনিয়োগ রিবেট <strong>'+bdt(existRebate)+'</strong> ও TDS বাদে <strong>'+bdt(newBalance)+'</strong> পরিশোধ করতে হবে।';
-      }
-    }
-
-    if(investUseful && totalAllowableInvest > 0){
-      document.getElementById('investAnalysis').style.display = 'block';
-      document.getElementById('v-exist-invest').textContent  = bdt(totalAllowableInvest);
-      document.getElementById('v-exist-rebate').textContent  = bdt(existRebate);
-      if(remainInvest <= 0){
-        document.getElementById('remaining-row').style.display = 'none';
-        document.getElementById('v-invest-status').textContent = '✓ সর্বোচ্চ রিবেট অর্জিত হয়েছে';
-        // Update green box message
-        document.getElementById('investMsg').innerHTML =
-          '<strong>✓ সর্বোচ্চ রিবেট অর্জিত।</strong> বিদ্যমান বিনিয়োগ <strong>'+bdt(totalAllowableInvest)+'</strong> থেকে <strong>'+bdt(existRebate)+'</strong> রিবেট পাবেন।';
-      } else {
-        document.getElementById('remaining-row').style.display = 'flex';
-        document.getElementById('v-remaining-invest').textContent = bdt(remainInvest);
-        document.getElementById('v-invest-status').textContent = '';
-        // Update green box message to show remaining
-        document.getElementById('investMsg').innerHTML =
-          'বিদ্যমান বিনিয়োগ <strong>'+bdt(totalAllowableInvest)+'</strong>। সর্বোচ্চ রিবেটের জন্য আরও <strong style="color:#f7d489">'+bdt(remainInvest)+'</strong> বিনিয়োগ করুন।';
-      }
-    } else {
-      document.getElementById('investAnalysis').style.display = 'none';
-      // Restore original invest message when no existing investments
-      if(investUseful){
-        if(minApplied){
-          document.getElementById('investMsg').innerHTML =
-            'মোট কর <strong>'+bdt(grossTax)+'</strong> — নূন্যতম কর ৳৫,০০০ পর্যন্ত কমাতে <strong>'+bdt(usefulInvest)+'</strong> বিনিয়োগ করলে <strong>'+bdt(appliedRebate)+'</strong> রিবেট পাবেন।';
-        } else {
-          document.getElementById('investMsg').innerHTML =
-            'সর্বোচ্চ <strong>'+bdt(appliedRebate)+'</strong> রিবেট পেতে আনুমানিক <strong>'+bdt(usefulInvest)+'</strong> বিনিয়োগ করতে হবে।';
-        }
-      }
-    }
-
-    // Store results for PDF generation
-    // Investment warning: no existing investments but rebate assumed
-    const warnEl = document.getElementById('investWarning');
-    if(investUseful && totalAllowableInvest === 0 && appliedRebate > 0){
-      warnEl.style.display = 'block';
-      document.getElementById('warnRebateAmt').textContent = bdt(appliedRebate);
-      document.getElementById('warnExtraAmt').textContent  = bdt(appliedRebate);
-    } else {
-      warnEl.style.display = 'none';
-    }
-
-    // Section 170 — Filing period incentive / penalty
-    const filingPeriod  = document.getElementById('filingPeriod').value;
-    const payableBase   = Math.max(0, grossTax - tds); // ধারা ১৭০: গ্রস ট্যাক্স − কর্তনকৃত টিডিএস
-    let s170Amount = 0, s170Type = 'none';
-
-    if (!minApplied && !isRefund && payableBase > 0) {
-      if (filingPeriod === 'q1') {
-        s170Amount = Math.min(Math.round(payableBase * 0.05), 25000);
-        s170Type   = 'incentive';
-      } else if (filingPeriod === 'q3') {
-        s170Amount = Math.max(Math.round(payableBase * 0.02), 3000);
-        s170Type   = 'penalty';
-      } else if (filingPeriod === 'q4') {
-        s170Amount = Math.max(Math.round(payableBase * 0.05), 5000);
-        s170Type   = 'penalty';
-      }
-    }
-    const adjustedBalance = s170Type === 'incentive'
-      ? Math.max(0, payableBase - s170Amount)
-      : payableBase + s170Amount;
-
-    // Update Section 170: adjust final amount directly + show note
-    const s170NoteEl = document.getElementById('s170Note');
-    if (s170Type === 'none') {
-      s170NoteEl.style.display = 'none';
-    } else {
-      // Adjust the displayed final amount
-      const periodNames = { q1:'জুলাই–সেপ্টেম্বর', q3:'জানুয়ারি–মার্চ', q4:'এপ্রিল–জুন' };
-      const pName = periodNames[filingPeriod];
-
-      // Update balance with s170 adjustment
-      balance = s170Type === 'incentive'
-        ? balance - s170Amount
-        : balance + s170Amount;
-      isRefund = balance < 0;
-
-      // Redisplay adjusted amount in navy box
-      const labelElS  = document.getElementById('finalTaxLabel');
-      const amountElS = document.getElementById('v-nettax');
-      labelElS.textContent  = isRefund
-        ? 'ফেরতযোগ্য কর (Tax Refund)'
-        : 'রিটার্ন দাখিলের সময় কর দিতে হবে · Tax Due at Return Filing';
-      amountElS.textContent = bdt(Math.abs(balance));
-      amountElS.style.color = isRefund ? '#7ee8a2' : '#f7d489';
-
-      // Show small note
-      s170NoteEl.style.display = 'block';
-      if (s170Type === 'incentive') {
-        s170NoteEl.style.background = 'rgba(74,222,128,0.12)';
-        s170NoteEl.style.borderLeft = '3px solid #22c55e';
-        s170NoteEl.style.color      = '#166534';
-        s170NoteEl.innerHTML = '✓ ধারা ১৭০ ('+pName+'): ইনসেন্টিভ <strong>'+bdt(s170Amount)+'</strong> বাদে হিসাব করা হয়েছে।';
-      } else {
-        s170NoteEl.style.background = 'rgba(239,68,68,0.1)';
-        s170NoteEl.style.borderLeft = '3px solid #ef4444';
-        s170NoteEl.style.color      = '#991b1b';
-        s170NoteEl.innerHTML = '⚠ ধারা ১৭০ ('+pName+'): বিলম্ব জরিমানা <strong>'+bdt(s170Amount)+'</strong> যোগে হিসাব করা হয়েছে।';
-      }
-    }
-
     window.pdfData = {
       annual, taxFree, taxable, maxRebate, reqInvest,
-      appliedRebate, usefulInvest, investUseful,
-      grossTax, finalTax, tds, balance, isRefund, minApplied,
+      appliedRebate: (investUseful && totalAllowableInvest > 0) ? existRebate : appliedRebate, 
+      usefulInvest: (investUseful && totalAllowableInvest > 0) ? totalAllowableInvest : usefulInvest, 
+      investUseful, grossTax, finalTax, tds, balance, isRefund, minApplied,
       slabRows: rows, exemptionLimit, monthlyTDS,
       existingInvestments: existingInvestments.map(x=>({
         labelEn:x.opt.labelEn, label:x.opt.label,
@@ -1058,7 +1000,6 @@
     return opt.limit ? Math.min(amount, opt.limit) : amount;
   }
 
-  // Combined caps: these limits apply to the TOTAL across all entries of that type
   const COMBINED_CAPS = { dps: 120000 };
 
   function computeEffectiveAllowable(investments){
@@ -1096,11 +1037,10 @@
           '<div class="inv-sub">'+sub+'</div>'+capNote+'</div>'+
           '<div style="display:flex;align-items:center;gap:8px">'+
           '<div class="inv-allowable">'+fmtI(item.amount)+'</div>'+
-          '<button class="inv-del" onclick="removeInvestment('+i+')" title="মুছুন">×</button>'+
+          '<button class="inv-del" onclick="removeInvestment('+i+')" title="муছুন">×</button>'+
           '</div></div>';
       }).join('');
 
-      // Combined DPS cap warning
       const dpsTotal = existingInvestments.filter(x=>x.opt.id==='dps').reduce((s,x)=>s+x.amount, 0);
       if(dpsTotal > 120000){
         container.innerHTML += '<div style="color:#b06000;font-size:12px;padding:7px 4px;border-top:1px dashed var(--line);margin-top:2px">'+
@@ -1230,8 +1170,8 @@
         if (r.grossTax === 0 && isNew)  return 'Income within tax-free limit. Min. tax BDT 1,000 applies (new taxpayer).';
         if (r.grossTax === 0)           return 'Income within tax-free limit. No tax payable.';
         if (r.grossTax > 0 && r.grossTax <= 5000) return 'Gross tax BDT '+fmtN(r.grossTax)+'. Minimum tax of BDT 5,000 applies.';
-        if (r.minApplied) return 'Tax reducible to min. BDT 5,000 via investment rebate. After TDS: '+bdt2(r.balance)+' to pay.';
-        return 'Gross tax '+bdt2(r.grossTax)+' minus rebate & TDS: '+bdt2(r.balance)+' payable.';
+        if (r.minApplied) return 'Tax reducible to min. BDT 5,000 via investment rebate. After TDS and adjustment: '+bdt2(r.balance)+' to pay.';
+        return 'Gross tax '+bdt2(r.grossTax)+' minus rebate & TDS with adjustments: '+bdt2(r.balance)+' payable.';
       };
 
       // ── HEADER ──────────────────────────
@@ -1241,7 +1181,6 @@
       doc.line(0, 36, W, 36);
       doc.setLineWidth(0.2);
 
-      // Left: Taxpayer name + subtitle
       doc.setFontSize(15); doc.setFont('helvetica','bold');
       doc.setTextColor(11,61,46);
       doc.text(tpName, M, 14);
@@ -1250,7 +1189,6 @@
       doc.setTextColor(91,110,100);
       doc.text('Income Tax Calculation  |  AY 2026-27 & 2027-28', M, 24);
 
-      // Right: "Income Tax Calculator" large, then developed by + LinkedIn icon + date
       doc.setFontSize(12); doc.setFont('helvetica','bold');
       doc.setTextColor(11,61,46);
       doc.text('Income Tax Calculator', W-M, 12, {align:'right'});
@@ -1259,7 +1197,7 @@
       doc.setTextColor(91,110,100);
       const devByLine = 'Developed by: Md. Nur Uddin Mahmud';
       doc.text(devByLine, W-M, 20, {align:'right'});
-      // LinkedIn icon placed to the left of "Developed by" text
+      
       const liHSz = 3.5;
       const liHX  = W - M - doc.getTextWidth(devByLine) - liHSz - 2;
       const liHY  = 17;
@@ -1275,7 +1213,6 @@
 
       y = 44;
 
-      // ── helpers ──────────────────────────
       const secTitle = (t) => {
         doc.setFontSize(7.5); doc.setFont('helvetica','bold');
         doc.setTextColor(11,61,46);
@@ -1368,7 +1305,7 @@
           columnStyles:{0:{cellWidth:100},1:{halign:'right'},2:{halign:'right',fontStyle:'bold'}},
           didDrawPage: function(data){ y = data.cursor.y; }
         });
-        y = doc.lastAutoTable.finalY + 3;
+        y = doc.autoTable.finalY + 3;
 
         if(r.existingInvestments.some(x=>x.capped)){
           if(y > 265) { doc.addPage(); y = 16; }
@@ -1376,7 +1313,6 @@
           doc.text('* Amount capped at statutory allowable limit for this investment type.', M, y);
           y += 5;
         }
-        // DPS combined cap note
         const dpsTotalAmt = r.existingInvestments.filter(x=>x.labelEn.includes('DPS')).reduce((s,x)=>s+x.amount,0);
         if(dpsTotalAmt > 120000){
           if(y > 265) { doc.addPage(); y = 16; }
@@ -1405,10 +1341,10 @@
       secTitle('TAX SLAB CALCULATION');
       const engLabels = [
         'Tax Exempted (First BDT '+fmtN(r.exemptionLimit)+')',
-        'Next BDT 3,00,000',
-        'Next BDT 4,00,000',
-        'Next BDT 5,00,000',
-        'Next BDT 20,00,000',
+        'Next BDT 3,0,000',
+        'Next BDT 4,0,000',
+        'Next BDT 5,0,000',
+        'Next BDT 20,0,000',
         'Remaining'
       ];
       doc.autoTable({
@@ -1422,40 +1358,36 @@
         bodyStyles:{fontSize:9,textColor:[40,52,46],lineColor:[220,225,222],lineWidth:0.15},
         columnStyles:{1:{halign:'right'},2:{halign:'right',cellWidth:14},3:{halign:'right',fontStyle:'bold'}},
       });
-      y = doc.lastAutoTable.finalY + 5;
+      y = doc.autoTable.finalY + 5;
 
       // ── TAX SUMMARY ──────────────────────
       secTitle('TAX SUMMARY');
       rowPDF('Gross Tax (From Slabs)', bdt2(r.grossTax));
       if(r.investUseful) rowPDF('Investment Rebate (10%)', '- '+bdt2(r.appliedRebate));
       if(tdsVal>0) rowPDF('TDS Deducted at Source', '- '+bdt2(tdsVal));
-      rowPDF('Net Tax Payable (Gross - Rebate - TDS)', bdt2(Math.abs(r.balance)), true);
+      rowPDF('Net Tax Payable (Gross - Rebate - TDS with adjustments)', bdt2(Math.abs(r.balance)), true);
       y += 5;
 
-      // ── FINAL BOX (split: left = Tax To Pay, right = Monthly TDS) ─
       if(y > 238) { doc.addPage(); y = 16; }
       const finalLbl = r.isRefund ? 'TAX REFUND' : 'TAX DUE AT RETURN FILING';
       const boxW = W - M*2;
       const boxH = 30;
       const splitX = M + boxW * 0.56;
 
-      // Box outline
       doc.setDrawColor(11,61,46); doc.setLineWidth(0.6);
       doc.rect(M, y, boxW, boxH, 'S');
-      // Left accent bar
       doc.setFillColor(11,61,46); doc.rect(M, y, 3, boxH, 'F');
-      // Vertical separator
       doc.setDrawColor(200,215,205); doc.setLineWidth(0.4);
       doc.line(splitX, y+3, splitX, y+boxH-3);
       doc.setLineWidth(0.2);
 
-      // ── Left: Tax Due at Return Filing ──
       doc.setFontSize(7); doc.setFont('helvetica','bold');
       doc.setTextColor(91,110,100);
       doc.text(finalLbl, M+6, y+8);
       doc.setFontSize(15); doc.setFont('helvetica','bold');
       doc.setTextColor(11,61,46);
       doc.text(bdt2(Math.abs(r.balance||0)), M+6, y+19);
+      
       const msgTxt = getTaxMsg();
       const msgLines = doc.splitTextToSize(msgTxt, splitX - M - 10);
       doc.setFontSize(6.5); doc.setFont('helvetica','normal');
@@ -1463,7 +1395,6 @@
       if(msgLines[0]) doc.text(msgLines[0], M+6, y+24.5);
       if(msgLines[1]) doc.text(msgLines[1], M+6, y+28.5);
 
-      // ── Right: Monthly TDS ──
       const rx = splitX + 5;
       doc.setFontSize(7); doc.setFont('helvetica','bold');
       doc.setTextColor(91,110,100);
@@ -1477,7 +1408,6 @@
 
       y += boxH + 8;
 
-      // ── SECTION 170 NOTE (compact) ──────────────
       if(r.s170Type && r.s170Type !== 'none'){
         if(y > 270) { doc.addPage(); y = 16; }
         const periodLabels = {
@@ -1493,14 +1423,12 @@
         doc.setFontSize(7.5); doc.setFont('helvetica','bold');
         doc.setTextColor(...noteColor);
         const noteText = isIncentive
-          ? 'Section 170 ('+pLabel+'): Incentive '+bdt2(r.s170Amount)+' deducted. Amount shown is after adjustment.'
-          : 'Section 170 ('+pLabel+'): Late penalty '+bdt2(r.s170Amount)+' added. Amount shown includes penalty.';
+          ? 'Section 170 ('+pLabel+'): Incentive '+bdt2(r.s170Amount)+' deducted based on Net Tax Payable. Amount shown is after adjustment.'
+          : 'Section 170 ('+pLabel+'): Late penalty '+bdt2(r.s170Amount)+' added based on Net Tax Payable. Amount shown includes penalty.';
         doc.text(noteText, M+3, y+4.5);
         y += 14;
       }
 
-      // ── INVESTMENT OPTIONS ────────────────
-      if(y > 215) { doc.addPage(); y = 16; }
       secTitle('ALLOWABLE INVESTMENT OPTIONS (Tax Rebate @ 10%)');
       doc.autoTable({
         head:[['Investment / Donation Details','Allowable Limit']],
@@ -1536,9 +1464,8 @@
         bodyStyles:{fontSize:8.5,textColor:[40,52,46],lineColor:[220,225,222],lineWidth:0.15},
         columnStyles:{0:{cellWidth:130},1:{halign:'right',fontStyle:'bold',textColor:[11,61,46]}},
       });
-      y = doc.lastAutoTable.finalY + 8;
+      y = doc.autoTable.finalY + 8;
 
-      // ── ADVISORY ─────────────────────────
       if(y > 265) { doc.addPage(); y = 16; }
       const advTxt = 'For accurate income tax return filing, please consult an experienced Income Tax Practitioner. Incorrect returns may result in penalties and legal complications.';
       const advLines = doc.splitTextToSize(advTxt, W-M*2-8);
@@ -1551,18 +1478,21 @@
       doc.text(advLines, M+5, y+13);
       y += advLines.length*4.5+14;
 
-      // ── FOOTER ───────────────────────────
+      doc.footer = function(data) {
+        doc.setFontSize(7);
+        doc.text("Page " + data.pageCount, W - M, 285, {align: "right"});
+      };
+
       doc.setDrawColor(200,210,204); doc.setLineWidth(0.3);
       doc.line(M, y, W-M, y); y += 5;
 
-      // Name + title row
       doc.setFontSize(8.5); doc.setFont('helvetica','bold');
       doc.setTextColor(11,61,46);
       doc.text('Md. Nur Uddin Mahmud', M, y);
       const nameW = doc.getTextWidth('Md. Nur Uddin Mahmud');
       doc.setFont('helvetica','normal'); doc.setTextColor(107,122,113);
       doc.text('   |   Income Tax Practitioner  ·  BBA & MBA, University of Chittagong', M + nameW, y);
-      // WhatsApp clickable link
+      
       doc.setFont('helvetica','bold'); doc.setTextColor(11,61,46);
       const waNum2   = '01521222707';
       const waLabel2 = 'WhatsApp: ';
@@ -1586,7 +1516,6 @@
     }
   });
 
-  // ── Spin animation ──
   const spinStyle = document.createElement('style');
   spinStyle.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
   document.head.appendChild(spinStyle);
