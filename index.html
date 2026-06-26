@@ -18,6 +18,16 @@
     --surface:#f7f9f7;
     --error:  #b3322e;
   }
+
+  /* Dark Mode */
+  :root.dark-mode {
+    --ink:    #e8eae6;
+    --muted:  #9ca39d;
+    --line:   #2f3b37;
+    --bg:     #1a1f1d;
+    --surface:#0f1310;
+    --error:  #d94c47;
+  }
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
     font-family:'Hind Siliguri',sans-serif;
@@ -51,6 +61,11 @@
     border-radius:4px;
     padding:2px 8px;
     font-weight:600;
+  }
+
+  :root.dark-mode .tax-year {
+    background:rgba(11,61,46,0.2);
+    color:#4ade80;
   }
 
   /* ── Cards ──────────────────────────── */
@@ -276,6 +291,17 @@
 </style>
 </head>
 <body>
+<div style="position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;justify-content:flex-end">
+  <button id="darkModeToggle" style="
+    background:none;border:1px solid var(--line);
+    padding:6px 12px;border-radius:6px;
+    cursor:pointer;font-size:13px;font-family:'Hind Siliguri',sans-serif;
+    color:var(--ink);transition:all .2s;
+  " onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='none'">
+    🌙 Dark
+  </button>
+</div>
+
 <div class="wrap">
 
   <header>
@@ -729,6 +755,25 @@
       '<td class="tax-col"></td>'+
     '</tr>';
   }
+
+  /* ─── Dark Mode Toggle ─────────────────────────── */
+  (function(){
+    const darkModeBtn = document.getElementById('darkModeToggle');
+    const isDarkSaved = localStorage.getItem('incotax-dark-mode') === 'true';
+    
+    // Apply saved preference on load
+    if(isDarkSaved) {
+      document.documentElement.classList.add('dark-mode');
+      darkModeBtn.innerHTML = '☀️ Light';
+    }
+    
+    // Toggle handler
+    darkModeBtn.addEventListener('click', ()=>{
+      const isDark = document.documentElement.classList.toggle('dark-mode');
+      localStorage.setItem('incotax-dark-mode', isDark);
+      darkModeBtn.innerHTML = isDark ? '☀️ Light' : '🌙 Dark';
+    });
+  })();
 
   /* ─── Main calculate ─── */
   function calculate(){
