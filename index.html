@@ -103,6 +103,7 @@
   .month-field { display:flex; flex-direction:column; gap:4px; }
   .month-field label { font-size:12px; font-weight:600; color:var(--muted); }
   .month-field label .fiscal { color:var(--green); font-size:10px; margin-left:3px; }
+  :root.dark-mode .month-field label .fiscal { color:#4ade80; }
   .mini-wrap { position:relative; }
   .mini-wrap .tk { position:absolute; left:9px; top:50%; transform:translateY(-50%);
     font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted); pointer-events:none; }
@@ -221,10 +222,18 @@
 
   /* ── Investment options table ───────── */
   .options { margin-top:32px; }
-  .options h2 { font-size:15px; font-weight:700; margin-bottom:3px; }
+  .options h2 { font-size:15px; font-weight:700; margin-bottom:3px; color:var(--ink); }
   #investOptToggle:hover h2 { color:var(--green); }
   #investOptToggle:focus { outline:none; }
   .options .sub { font-size:13px; color:var(--muted); margin-bottom:12px; }
+
+  /* Investment warning — always inside dark navy box, so always light text */
+  #investWarning {
+    background: rgba(251,191,36,0.12) !important;
+    border-left: 3px solid #fbbf24 !important;
+    color: #fef3c7 !important;
+  }
+  #investWarning strong { color: #fcd34d !important; }
   .options table { width:100%; border-collapse:collapse; font-size:13px; }
   .options th {
     text-align:left; font-size:11px; font-weight:700; letter-spacing:.05em;
@@ -552,7 +561,7 @@
       <div class="fmsg" id="taxMsg">আয়ের তথ্য দিলে প্রদেয় কর এখানে দেখাবে।</div>
       <div id="s170Note" style="display:none;margin-top:8px;padding:8px 11px;border-radius:6px;font-size:12px;line-height:1.5;font-family:'Hind Siliguri',sans-serif">
       </div>
-      <div id="investWarning" style="display:none;margin-top:10px;padding:10px 12px;background:rgba(251,191,36,0.15);border-left:3px solid #f59e0b;border-radius:0 6px 6px 0;font-size:12.5px;line-height:1.55;color:#92400e;font-family:'Hind Siliguri',sans-serif">
+      <div id="investWarning" style="display:none;margin-top:10px;padding:10px 12px;border-radius:0 6px 6px 0;font-size:12.5px;line-height:1.55;font-family:'Hind Siliguri',sans-serif">
         ⚠ উপরের হিসাবে সর্বোচ্চ বিনিয়োগ রিবেট <strong id="warnRebateAmt">৳ 0</strong> বিবেচনায় নেওয়া হয়েছে। প্রকৃতপক্ষে বিনিয়োগ না করলে রিবেট পাওয়া যাবে না এবং অতিরিক্ত <strong id="warnExtraAmt">৳ 0</strong> কর দিতে হবে।
       </div>
     </div>
