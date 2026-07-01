@@ -973,7 +973,7 @@
     let isRefund = balance < 0;
     document.getElementById('v-nettax-row').textContent = bdt(Math.abs(balance));
     if(isRefund) document.getElementById('v-nettax-row').style.color = 'var(--green)';
-    else document.getElementById('v-nettax-row').style.color = '';
+    else document.getElementById('v-nettax-row').style.color = 'var(--ink)';
     const labelEl  = document.getElementById('finalTaxLabel');
     const amountEl = document.getElementById('v-nettax');
 
@@ -1038,7 +1038,7 @@
       const newIsRefund = newBalance < 0;
       document.getElementById('v-nettax-row').textContent = bdt(Math.abs(newBalance));
       if(newIsRefund) document.getElementById('v-nettax-row').style.color = 'var(--green)';
-      else document.getElementById('v-nettax-row').style.color = '';
+      else document.getElementById('v-nettax-row').style.color = 'var(--ink)';
       const labelEl2  = document.getElementById('finalTaxLabel');
       const amountEl2 = document.getElementById('v-nettax');
       labelEl2.textContent  = newIsRefund
